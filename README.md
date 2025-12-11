@@ -10,7 +10,7 @@ I've been thinking about consciousness - how it works, what it actually is, and 
 
 ## Read It Here
 
-**[Full Theory](https://bthavanish.github.io/learn/)**
+**[Full Theory](https://bthavanish.github.io/consciousness-theory/)**
 
 ## The Core Ideas
 
