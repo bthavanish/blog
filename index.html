@@ -487,8 +487,7 @@
             stroke-width: 1.5;
             fill: none;
         }
-
-        .toc-mobile-overlay {
+      .toc-mobile-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -499,10 +498,12 @@
             z-index: 999;
             opacity: 0;
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
         .toc-mobile-overlay.active {
             opacity: 1;
+            pointer-events: auto;
         }
 
         .toc-mobile-panel {
@@ -1263,4 +1264,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
