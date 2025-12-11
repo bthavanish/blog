@@ -3,147 +3,529 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consciousness Theory</title>
+    <title>Consciousness Theory - bthavanish</title>
     <style>
+        :root {
+            --background: 0 0% 98%;
+            --foreground: 0 0% 10%;
+            --card: 0 0% 100%;
+            --card-foreground: 0 0% 10%;
+            --primary: 221.2 83.2% 53.3%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 220 14% 96%;
+            --secondary-foreground: 0 0% 20%;
+            --muted: 220 13% 95%;
+            --muted-foreground: 0 0% 40%;
+            --border: 220 13% 91%;
+            --ring: 221.2 83.2% 53.3%;
+            --radius: 0.5rem;
+        }
+
+        html.dark {
+            --background: 0 0% 0%;
+            --foreground: 0 0% 98%;
+            --card: 0 0% 5%;
+            --card-foreground: 0 0% 98%;
+            --primary: 217.2 91.2% 59.8%;
+            --primary-foreground: 0 0% 10%;
+            --secondary: 0 0% 12%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 0 0% 10%;
+            --muted-foreground: 0 0% 65%;
+            --border: 0 0% 20%;
+        }
+        
+        html.dark body {
+            background: hsl(var(--background));
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
-            padding: 20px;
+        ::-webkit-scrollbar {
+            display: none;
         }
 
-        #content {
-            max-width: 800px;
+        html {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: hsl(var(--foreground));
+            background: hsl(var(--background));
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            border-bottom: 1px solid hsl(var(--border));
+            background: hsl(var(--background) / 0.8);
+            backdrop-filter: blur(12px);
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.2s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .theme-toggle {
+            background: hsl(var(--secondary));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.3s forwards;
+        }
+
+        .theme-toggle:hover {
+            background: hsl(var(--muted));
+            transform: scale(1.05);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: hsl(var(--foreground));
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover svg {
+            transform: rotate(15deg);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            min-height: calc(100vh - 200px);
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.4s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) + 2px);
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.15);
         }
 
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #1a1a1a;
+            font-size: clamp(1.875rem, 5vw, 2.5rem);
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
             line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .author {
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            font-style: italic;
         }
 
         h2 {
-            font-size: 1.8em;
-            margin-top: 40px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
+            font-size: clamp(1.5rem, 4vw, 1.875rem);
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: hsl(var(--foreground));
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid hsl(var(--primary));
+            transition: border-color 0.3s ease;
+            letter-spacing: -0.01em;
+        }
+
+        h2:first-of-type {
+            margin-top: 2rem;
         }
 
         h3 {
-            font-size: 1.4em;
-            margin-top: 30px;
-            margin-bottom: 10px;
-            color: #34495e;
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: hsl(var(--foreground));
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         p {
-            margin-bottom: 15px;
-            text-align: justify;
+            margin-bottom: 1.25rem;
+            color: hsl(var(--foreground));
+            font-size: 1rem;
+            line-height: 1.8;
         }
 
         ul, ol {
-            margin-left: 30px;
-            margin-bottom: 15px;
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.8;
         }
 
         li {
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        li::marker {
+            color: hsl(var(--primary));
         }
 
         strong {
-            color: #2c3e50;
+            color: hsl(var(--foreground));
             font-weight: 600;
         }
 
+        em {
+            color: hsl(var(--foreground));
+            font-style: italic;
+        }
+
         code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+            padding: 0.2rem 0.4rem;
+            border-radius: calc(var(--radius) - 2px);
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-size: 0.875em;
+            border: 1px solid hsl(var(--border));
+            transition: background 0.2s ease;
         }
 
         pre {
-            background: #f8f8f8;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
+            background: hsl(var(--muted));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.25rem;
             overflow-x: auto;
-            margin: 20px 0;
-            line-height: 1.4;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        pre:hover {
+            box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.1);
         }
 
         pre code {
             background: none;
             padding: 0;
+            border: none;
+            color: hsl(var(--foreground));
         }
 
         blockquote {
-            background: #f9f9f9;
-            border-left: 4px solid #ccc;
-            margin: 20px 0;
-            padding: 15px;
+            background: hsl(var(--muted));
+            border-left: 4px solid hsl(var(--primary));
+            margin: 1.5rem 0;
+            padding: 1rem 1.25rem;
             font-style: italic;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            color: hsl(var(--foreground));
+        }
+
+        blockquote:hover {
+            transform: translateX(4px);
+        }
+
+        blockquote p {
+            margin-bottom: 0;
         }
 
         hr {
             border: none;
-            border-top: 1px solid #ddd;
-            margin: 40px 0;
+            border-top: 1px solid hsl(var(--border));
+            margin: 3rem 0;
         }
 
         a {
-            color: #3498db;
+            color: hsl(var(--primary));
             text-decoration: none;
+            transition: opacity 0.2s ease;
+            position: relative;
         }
 
         a:hover {
-            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: hsl(var(--primary));
+            transition: width 0.3s ease;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        footer {
+            border-top: 1px solid hsl(var(--border));
+            background: hsl(var(--card));
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-section {
+            transition: transform 0.3s ease;
+        }
+
+        .footer-section:hover {
+            transform: translateY(-4px);
+        }
+
+        .footer-section h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: hsl(var(--foreground));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+            line-height: 1.6;
+        }
+
+        .footer-section a {
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .footer-section a:hover {
+            color: hsl(var(--primary));
+            transform: translateX(4px);
+        }
+
+        .footer-bottom {
+            padding-top: 1.5rem;
+            border-top: 1px solid hsl(var(--border));
+            text-align: center;
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: hsl(var(--muted-foreground));
         }
 
         @media (max-width: 768px) {
-            #content {
-                padding: 20px;
+            .content-card {
+                padding: 1.5rem;
             }
-            
-            h1 {
-                font-size: 2em;
+
+            main {
+                padding: 2rem 1rem;
             }
-            
-            h2 {
-                font-size: 1.5em;
+
+            .footer-top {
+                flex-direction: column;
+            }
+
+            ul, ol {
+                margin-left: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content-card {
+                padding: 1.25rem;
+            }
+
+            main {
+                padding: 1.5rem 1rem;
+            }
+
+            .header-content {
+                padding: 0.75rem 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div id="content"></div>
+    <header>
+        <div class="header-content">
+            <div class="logo">Consciousness Theory</div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="sun" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                </svg>
+                <svg class="moon" style="display: none;" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="content-card">
+            <div id="content" class="loading">Loading content...</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p>A theory about consciousness, self-models, and the future of AI by bthavanish.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>License</h4>
+                    <p>MIT License &copy; 2025 bthavanish</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="#part-1-youre-being-reconstructed-every-moment">Read the Theory</a>
+                    <a href="#testing-this-theory">Testing Framework</a>
+                    <a href="https://github.com/bthavanish/consciousness-theory" target="_blank" rel="noopener">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>bthavanish</p>
+            </div>
+        </div>
+    </footer>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const sunIcon = themeToggle.querySelector('.sun');
+        const moonIcon = themeToggle.querySelector('.moon');
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            html.classList.add('dark');
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        } else {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            
+            sunIcon.style.display = isDark ? 'none' : 'block';
+            moonIcon.style.display = isDark ? 'block' : 'none';
+            
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
         async function loadMarkdown() {
             try {
                 const response = await fetch('content.md');
                 const markdown = await response.text();
+                
+                marked.setOptions({
+                    headerIds: true,
+                    mangle: false
+                });
+                
                 const html = marked.parse(markdown);
                 document.getElementById('content').innerHTML = html;
             } catch (err) {
-                document.getElementById('content').innerHTML = '<p>Error loading content. Make sure content.md exists in the same directory.</p>';
+                document.getElementById('content').innerHTML = 
+                    '<p style="color: hsl(var(--muted-foreground));">Error loading content. Make sure content.md exists in the same directory.</p>';
                 console.error('Error loading markdown:', err);
             }
         }
