@@ -1,5 +1,180 @@
 // === CONFIGURATION ===
-const CONFIG_URL ='https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/config.json';
+const CONFIG_URL = 'https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/config.json';
+
+// === COMMENTS MANAGER ===
+class CommentsManager {
+    constructor() {
+        this.commentsSection = document.getElementById('commentsSection');
+        this.commentsContainer = document.getElementById('commentsContainer');
+        this.config = null;
+    }
+
+    setConfig(config) {
+        this.config = config;
+    }
+
+    async load(documentSlug) {
+        if (!this.config || !this.config.comments || !this.config.comments.enabled) {
+            this.commentsSection.style.display = 'none';
+            return;
+        }
+
+        this.commentsSection.style.display = 'block';
+        this.commentsContainer.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Loading comments...</p></div>';
+
+        const provider = this.config.comments.provider;
+
+        try {
+            if (provider === 'giscus') {
+                await this.loadGiscus(documentSlug);
+            } else if (provider === 'utterances') {
+                await this.loadUtterances(documentSlug);
+            } else if (provider === 'disqus') {
+                await this.loadDisqus(documentSlug);
+            }
+        } catch (error) {
+            console.error('Comments loading error:', error);
+            this.showError();
+        }
+    }
+
+    async loadGiscus(documentSlug) {
+        const settings = this.config.comments.giscus;
+        if (!settings || !settings.repo) {
+            this.showError('Giscus not configured properly');
+            return;
+        }
+
+        // Clear container
+        this.commentsContainer.innerHTML = '';
+
+        // Create script
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.setAttribute('data-repo', settings.repo);
+        script.setAttribute('data-repo-id', settings.repoId || '');
+        script.setAttribute('data-category', settings.category || 'General');
+        script.setAttribute('data-category-id', settings.categoryId || '');
+        script.setAttribute('data-mapping', settings.mapping || 'pathname');
+        script.setAttribute('data-strict', settings.strict || '0');
+        script.setAttribute('data-reactions-enabled', settings.reactionsEnabled || '1');
+        script.setAttribute('data-emit-metadata', '0');
+        script.setAttribute('data-input-position', settings.inputPosition || 'bottom');
+        script.setAttribute('data-theme', this.getGiscusTheme());
+        script.setAttribute('data-lang', settings.lang || 'en');
+        script.setAttribute('data-loading', 'lazy');
+        script.crossOrigin = 'anonymous';
+        script.async = true;
+
+        this.commentsContainer.appendChild(script);
+
+        // Listen for theme changes
+        this.setupThemeListener();
+    }
+
+    async loadUtterances(documentSlug) {
+        const settings = this.config.comments.utterances;
+        if (!settings || !settings.repo) {
+            this.showError('Utterances not configured properly');
+            return;
+        }
+
+        this.commentsContainer.innerHTML = '';
+
+        const script = document.createElement('script');
+        script.src = 'https://utteranc.es/client.js';
+        script.setAttribute('repo', settings.repo);
+        script.setAttribute('issue-term', settings.issueTerm || 'pathname');
+        script.setAttribute('label', settings.label || 'comment');
+        script.setAttribute('theme', this.getUtterancesTheme());
+        script.crossOrigin = 'anonymous';
+        script.async = true;
+
+        this.commentsContainer.appendChild(script);
+        this.setupThemeListener();
+    }
+
+    async loadDisqus(documentSlug) {
+        const settings = this.config.comments.disqus;
+        if (!settings || !settings.shortname) {
+            this.showError('Disqus not configured properly');
+            return;
+        }
+
+        this.commentsContainer.innerHTML = '<div id="disqus_thread"></div>';
+
+        window.disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = documentSlug;
+        };
+
+        const script = document.createElement('script');
+        script.src = `https://${settings.shortname}.disqus.com/embed.js`;
+        script.setAttribute('data-timestamp', +new Date());
+        (document.head || document.body).appendChild(script);
+    }
+
+    getGiscusTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const settings = this.config.comments.giscus;
+        return isDark ? (settings.darkTheme || 'dark') : (settings.lightTheme || 'light');
+    }
+
+    getUtterancesTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const settings = this.config.comments.utterances;
+        return isDark ? (settings.darkTheme || 'github-dark') : (settings.lightTheme || 'github-light');
+    }
+
+    setupThemeListener() {
+        const observer = new MutationObserver(() => {
+            this.updateTheme();
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+
+    updateTheme() {
+        const provider = this.config?.comments?.provider;
+        
+        if (provider === 'giscus') {
+            const iframe = document.querySelector('iframe.giscus-frame');
+            if (iframe) {
+                const theme = this.getGiscusTheme();
+                iframe.contentWindow.postMessage(
+                    { giscus: { setConfig: { theme } } },
+                    'https://giscus.app'
+                );
+            }
+        } else if (provider === 'utterances') {
+            const iframe = document.querySelector('.utterances-frame');
+            if (iframe) {
+                const theme = this.getUtterancesTheme();
+                iframe.contentWindow.postMessage(
+                    { type: 'set-theme', theme },
+                    'https://utteranc.es'
+                );
+            }
+        }
+    }
+
+    showError(message = 'Unable to load comments') {
+        this.commentsContainer.innerHTML = `
+            <div class="error-state">
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    hide() {
+        this.commentsSection.style.display = 'none';
+    }
+}
+
+const commentsManager = new CommentsManager();
 
 // === STATE MANAGEMENT ===
 class AppState {
@@ -17,6 +192,7 @@ class AppState {
             this.config = await response.json();
             this.documents = this.config.documents || [];
             this.applyThemeColors();
+            commentsManager.setConfig(this.config);
             return true;
         } catch (error) {
             console.error('Config load error:', error);
@@ -622,6 +798,11 @@ class DocumentLoader {
         const readingTime = new ReadingTime();
         const minutes = readingTime.calculate(markdown);
         readingTime.display(minutes);
+
+        // Load comments if enabled
+        if (appState.currentDocument) {
+            commentsManager.load(appState.currentDocument.slug);
+        }
 
         window.scrollTo({ top: 0 });
     }
