@@ -7,46 +7,15 @@
     <script>
         // GitHub Pages SPA redirect handler
         (function() {
+            // Just redirect everything to index.html with the same path
+            // The router in script.js will handle everything
             var l = window.location;
-            var redirect = sessionStorage.redirect;
-            delete sessionStorage.redirect;
             
-            // Check if this is a Giscus OAuth callback
-            if (l.search) {
-                var search = l.search.substring(1);
-                var isGiscusCallback = search.indexOf('code=') !== -1 && search.indexOf('state=') !== -1;
-                
-                if (isGiscusCallback) {
-                    // For Giscus OAuth, redirect to the page stored in the 'state' parameter
-                    var stateParam = search.split('&').find(function(param) {
-                        return param.indexOf('state=') === 0;
-                    });
-                    
-                    if (stateParam) {
-                        try {
-                            var stateValue = decodeURIComponent(stateParam.split('=')[1]);
-                            var stateData = JSON.parse(stateValue);
-                            
-                            // Redirect to the original page with all OAuth params
-                            if (stateData && stateData.url) {
-                                l.replace(stateData.url + '?' + search);
-                                return;
-                            }
-                        } catch (e) {
-                            // If we can't parse state, just go to home with params
-                        }
-                    }
-                    
-                    // Fallback: redirect to home with OAuth params
-                    l.replace('/blog/?' + search);
-                    return;
-                }
-            }
+            // Store the redirect info
+            sessionStorage.redirect = l.href;
             
-            // Handle normal SPA redirects
-            if (redirect && redirect !== l.href) {
-                history.replaceState(null, null, redirect);
-            }
+            // Redirect to index.html - it will handle the rest
+            l.replace('/blog/');
         })();
     </script>
 </head>
