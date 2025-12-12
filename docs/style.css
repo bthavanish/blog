@@ -392,6 +392,33 @@ body {
     font-weight: 500;
 }
 
+/* === Comments Section === */
+.comments-card {
+    background-color: var(--bg-secondary);
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-top: 2rem;
+}
+
+.comments-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent);
+}
+
+#commentsContainer {
+    min-height: 200px;
+}
+
+/* Giscus theme integration */
+.giscus, .giscus-frame {
+    width: 100%;
+}
+
 /* === Document View === */
 .document-view {
     display: none;
