@@ -16,12 +16,12 @@
                 var params = {};
                 l.search.slice(1).split('&').forEach(function(v) {
                     var pair = v.split('=');
-                    params[pair[0]] = decodeURIComponent(pair[1] || '');
+                    params[pair[0]] = pair.slice(1).join('='); // Handle = in values
                 });
                 
                 if (params.p !== undefined) {
-                    var path = params.p;
-                    var query = params.q ? params.q.replace(/~and~/g, '&') : '';
+                    var path = decodeURIComponent(params.p);
+                    var query = params.q ? decodeURIComponent(params.q) : '';
                     
                     window.history.replaceState(null, null,
                         l.pathname.slice(0, -1) + path +
