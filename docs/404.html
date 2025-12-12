@@ -15,6 +15,13 @@
             
             if (redirect && redirect !== location.href) {
                 history.replaceState(null, null, redirect);
+            } else {
+                // Handle Giscus callback
+                var path = location.pathname + location.search + location.hash;
+                if (path && path !== '/') {
+                    // Redirect to index.html with the path preserved
+                    location.replace('/blog/' + (location.search || '') + (location.hash || ''));
+                }
             }
         })();
     </script>
