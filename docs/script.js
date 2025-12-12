@@ -1,5 +1,5 @@
 // === CONFIGURATION ===
-const CONFIG_URL = 'https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/config.json';
+const CONFIG_URL ='https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/config.json';
 
 // === STATE MANAGEMENT ===
 class AppState {
