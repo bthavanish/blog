@@ -312,10 +312,13 @@ class Router {
             route = route.slice(0, -1);
         }
 
-        if (route === '/' || route === '') {
+        // Remove query parameters from route matching
+        const cleanRoute = route.split('?')[0];
+
+        if (cleanRoute === '/' || cleanRoute === '') {
             appState.setHome();
         } else {
-            const slug = route.substring(1);
+            const slug = cleanRoute.substring(1);
             const doc = appState.documents.find(d => d.slug === slug);
             
             if (doc) {
@@ -746,6 +749,180 @@ class ReadingTime {
 class PrintManager {
     constructor() {
         document.getElementById('printBtn').addEventListener('click', () => this.print());
+    }
+
+    print() {
+        window.print();
+    }
+}
+
+// === DOCUMENT LOADER ===
+class DocumentLoader {
+    constructor() {
+        this.contentEl = document.getElementById('content');
+    }
+
+    async load(url) {
+        try {
+            this.contentEl.className = 'loading-state';
+            this.contentEl.innerHTML = '<div class="loading-spinner"></div><p>Hang tight, loading your content...</p>';
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const markdown = await response.text();
+            this.render(markdown);
+            this.initEnhancements(markdown);
+        } catch (error) {
+            this.showError(error);
+        }
+    }
+
+    render(markdown) {
+        marked.setOptions({
+            headerIds: true,
+            mangle: false,
+            breaks: false,
+            gfm: true
+        });
+
+        const html = marked.parse(markdown);
+        this.contentEl.innerHTML = html;
+        this.contentEl.classList.remove('loading-state');
+    }
+
+    initEnhancements(markdown) {
+        const toc = new TableOfContents();
+        toc.generate();
+
+        const readingTime = new ReadingTime();
+        const minutes = readingTime.calculate(markdown);
+        readingTime.display(minutes);
+
+        // Load comments if enabled
+        if (appState.currentDocument) {
+            commentsManager.load(appState.currentDocument.slug);
+        }
+
+        window.scrollTo({ top: 0 });
+    }
+
+    showError(error) {
+        console.error('Failed to load content:', error);
+        this.contentEl.className = 'error-state';
+        this.contentEl.innerHTML = `
+            <p>Oops! This is awkward..</p>
+            <p style="margin-top: 0.5rem;">Check your internet connection and give it another shot!</p>
+        `;
+    }
+}
+
+// === HOME SCREEN MANAGER ===
+class HomeScreenManager {
+    constructor() {
+        this.gridEl = document.getElementById('documentGrid');
+        this.loader = new DocumentLoader();
+    }
+
+    init() {
+        this.renderDocuments();
+    }
+
+    renderDocuments() {
+        this.gridEl.innerHTML = '';
+        
+        appState.documents.forEach((doc) => {
+            const card = document.createElement('div');
+            card.className = 'document-card';
+            
+            const tagsHTML = doc.tags ? `
+                <div class="document-meta">
+                    <div class="document-tags">
+                        ${doc.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            ` : '';
+            
+            const dateHTML = doc.date ? `
+                <div class="document-meta">
+                    <div class="document-date">${new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                </div>
+            ` : '';
+            
+            card.innerHTML = `
+                <div class="document-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                    </svg>
+                </div>
+                <h3>${doc.title}</h3>
+                <p>${doc.description}</p>
+                ${dateHTML}
+                ${tagsHTML}
+            `;
+            
+            card.addEventListener('click', () => this.openDocument(doc));
+            this.gridEl.appendChild(card);
+        });
+    }
+
+    openDocument(doc) {
+        router.navigate(`${router.getBasePath()}/${doc.slug}`);
+    }
+}
+
+// === INITIALIZATION ===
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load configuration first
+    const configLoaded = await appState.loadConfig();
+    if (!configLoaded) return;
+    
+    // Update UI with config
+    document.getElementById('siteTitle').textContent = appState.config.siteTitle || 'Blog';
+    document.getElementById('heroTitle').textContent = appState.config.heroTitle || 'Welcome';
+    document.getElementById('heroSubtitle').textContent = appState.config.heroSubtitle || 'Select a post to read';
+    document.getElementById('footerText').innerHTML = appState.config.footer || '© 2025';
+    
+    // Update page title
+    document.title = appState.config.siteTitle || 'Blog';
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription && appState.config.siteDescription) {
+        metaDescription.content = appState.config.siteDescription;
+    }
+    
+    // Initialize theme first
+    new ThemeManager();
+    
+    // Initialize utilities
+    new ReadingProgress();
+    new ScrollToTop();
+    new PrintManager();
+    new TextSizeControl();
+    new SearchManager();
+    new ShareManager();
+    
+    // Initialize home screen
+    const homeManager = new HomeScreenManager();
+    homeManager.init();
+    
+    // Initialize navigation
+    document.getElementById('siteTitle').addEventListener('click', () => {
+        router.navigate(router.getBasePath() + '/');
+    });
+    
+    document.getElementById('backButton').addEventListener('click', () => {
+        router.navigate(router.getBasePath() + '/');
+    });
+    
+    document.getElementById('errorHomeBtn').addEventListener('click', () => {
+        router.navigate(router.getBasePath() + '/');
+    });
+});        document.getElementById('printBtn').addEventListener('click', () => this.print());
     }
 
     print() {
