@@ -1,6 +1,6 @@
 {
   "siteTitle": "bthavanish's blog",
-  "siteDescription": "A personal blog about consciousness, AI, and technology",
+  "siteDescription": "A personal blog about me ",
   "heroTitle": "Select a blog to open",
   "heroSubtitle": "more will be added in the future..",
   "footer": "© 2025 bthavanish. All rights reserved. | <a href='https://github.com/bthavanish' target='_blank'>GitHub</a>",
@@ -11,38 +11,36 @@
     "accentLight": "#f4ede8"
   },
   
-"comments": {
-  "enabled": true,
-  "provider": "giscus",
-
-  "giscus": {
-    "repo": "bthavanish/blog",
-    "repoId": "R_kgDOQE2OUg",
-    "category": "General",
-    "categoryId": "DIC_kwDOQE2OUs4Czrjb",
-    "mapping": "pathname",
-    "strict": "0",
-    "reactionsEnabled": "1",
-    "inputPosition": "bottom",
-
-    "lightTheme": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/giscus.css",
-    "darkTheme": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/giscus.css",
-
-    "lang": "en"
+  "comments": {
+    "enabled": true,
+    "provider": "giscus",
+    
+    "giscus": {
+      "repo": "bthavanish/blog",
+      "repoId": "R_kgDOQE2OUg",
+      "category": "General",
+      "categoryId": "DIC_kwDOQE2OUs4Czrjb",
+      "mapping": "pathname",
+      "strict": "0",
+      "reactionsEnabled": "1",
+      "inputPosition": "bottom",
+      "lightTheme": "light",
+      "darkTheme": "dark",
+      "lang": "en"
+    },
+    
+    "utterances": {
+      "repo": "bthavanish/blog",
+      "issueTerm": "pathname",
+      "label": "comment",
+      "lightTheme": "gruvbox-light",
+      "darkTheme": "gruvbox-dark"
+    },
+    
+    "disqus": {
+      "shortname": "your-disqus-shortname"
+    }
   },
-  
-  "utterances": {
-    "repo": "bthavanish/blog",
-    "issueTerm": "pathname",
-    "label": "comment",
-    "lightTheme": "github-light",
-    "darkTheme": "github-dark"
-  },
-
-  "disqus": {
-    "shortname": "your-disqus-shortname"
-  }
-},
   
   "documents": [
     {
@@ -52,14 +50,6 @@
       "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/consciousness-theory.md",
       "date": "2025-01-15",
       "tags": ["AI", "Philosophy", "Consciousness"]
-    },
-    {
-      "title": "Example Post",
-      "slug": "example-post",
-      "description": "This is an example blog post to demonstrate the structure",
-      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/example.md",
-      "date": "2025-01-10",
-      "tags": ["Example", "Tutorial"]
     }
   ]
 }
