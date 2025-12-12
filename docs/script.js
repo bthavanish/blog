@@ -306,16 +306,16 @@ class Router {
 
     handleRoute() {
         // Visual debug info
-        const debugInfo = document.createElement('div');
+        /*const debugInfo = document.createElement('div');
         debugInfo.style.cssText = 'position: fixed; top: 10px; right: 10px; background: black; color: lime; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
         debugInfo.innerHTML = `
             <div>URL: ${window.location.href}</div>
             <div>Pathname: ${window.location.pathname}</div>
             <div>Search: ${window.location.search}</div>
-        `;
+        `
         document.body.appendChild(debugInfo);
         setTimeout(() => debugInfo.remove(), 5000);
-        
+        */
         // Check if we have redirect params from 404
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('p')) {
@@ -920,21 +920,21 @@ class HomeScreenManager {
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', async () => {
     // Add immediate visual feedback that script is running
-    const loadingDebug = document.createElement('div');
+    /*const loadingDebug = document.createElement('div');
     loadingDebug.style.cssText = 'position: fixed; top: 10px; right: 10px; background: green; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000;';
     loadingDebug.textContent = 'Script loading...';
-    document.body.appendChild(loadingDebug);
+    document.body.appendChild(loadingDebug);*/
     
     // Load configuration first
     const configLoaded = await appState.loadConfig();
     if (!configLoaded) {
-        loadingDebug.style.background = 'red';
-        loadingDebug.textContent = 'Config failed to load!';
+       /* loadingDebug.style.background = 'red';
+        loadingDebug.textContent = 'Config failed to load!';*/
         return;
     }
     
-    loadingDebug.textContent = `Config loaded. Docs: ${appState.documents.length}`;
-    setTimeout(() => loadingDebug.remove(), 3000);
+ /*   loadingDebug.textContent = `Config loaded. Docs: ${appState.documents.length}`;
+    setTimeout(() => loadingDebug.remove(), 3000);*/
     
     // Update UI with config
     document.getElementById('siteTitle').textContent = appState.config.siteTitle || 'Blog';
