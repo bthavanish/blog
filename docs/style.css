@@ -1161,3 +1161,65 @@ body {
         padding: 0;
     }
 }
+/* === Giscus Custom Styling === */
+/* Override Giscus iframe styles to match blog theme */
+.giscus, .giscus-frame {
+    width: 100%;
+}
+
+/* Add custom styling wrapper for better integration */
+#commentsContainer {
+    /* Giscus inherits colors from parent, so we set them here */
+    color-scheme: light dark;
+}
+
+html.dark #commentsContainer {
+    color-scheme: dark;
+}
+
+/* Style the comments container to better match your design */
+.comments-card {
+    background-color: var(--bg-secondary);
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-top: 2rem;
+}
+
+.comments-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent);
+}
+
+/* Ensure Giscus uses your blog's color scheme */
+.giscus-frame {
+    border: none !important;
+    min-height: 150px;
+}
+
+/* Loading state for comments */
+#commentsContainer .loading-state {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+}
+
+#commentsContainer .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+#commentsContainer .error-state {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+}
