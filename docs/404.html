@@ -8,14 +8,18 @@
         // Single Page Apps for GitHub Pages
         // This script converts 404 paths into query strings that index.html can handle
         (function(l) {
-            var path = l.pathname.slice(0, -1);
-            if (path && path !== '/blog') {
+            if (l.pathname === '/blog/404.html') {
+                return; // Don't redirect the 404 page itself
+            }
+            
+            var pathSegment = l.pathname.replace('/blog/', '');
+            
+            if (pathSegment && pathSegment !== '404.html') {
                 var search = l.search.slice(1);
                 // Encode the path and search into query format
                 l.replace(
-                    '/blog/?/' + 
-                    path.replace('/blog/', '') + 
-                    (search ? '&' + search.replace(/&/g, '~and~') : '') +
+                    '/blog/?p=/' + pathSegment + 
+                    (search ? '&q=' + search.replace(/&/g, '~and~') : '') +
                     l.hash
                 );
             }
