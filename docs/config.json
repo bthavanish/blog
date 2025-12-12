@@ -11,36 +11,38 @@
     "accentLight": "#f4ede8"
   },
   
-  "comments": {
-    "enabled": true,
-    "provider": "giscus",
-    
-    "giscus": {
-      "repo": "bthavanish/blog",
-      "repoId": "R_kgDOQE2OUg",
-      "category": "General",
-      "categoryId": "DIC_kwDOQE2OUs4Czrjb",
-      "mapping": "pathname",
-      "strict": "0",
-      "reactionsEnabled": "1",
-      "inputPosition": "bottom",
-      "lightTheme": "light",
-      "darkTheme": "dark",
-      "lang": "en"
-    },
-    
-    "utterances": {
-      "repo": "bthavanish/blog",
-      "issueTerm": "pathname",
-      "label": "comment",
-      "lightTheme": "github-light",
-      "darkTheme": "github-dark"
-    },
-    
-    "disqus": {
-      "shortname": "your-disqus-shortname"
-    }
+"comments": {
+  "enabled": true,
+  "provider": "giscus",
+
+  "giscus": {
+    "repo": "bthavanish/blog",
+    "repoId": "R_kgDOQE2OUg",
+    "category": "General",
+    "categoryId": "DIC_kwDOQE2OUs4Czrjb",
+    "mapping": "pathname",
+    "strict": "0",
+    "reactionsEnabled": "1",
+    "inputPosition": "bottom",
+
+    "lightTheme": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/giscus.css",
+    "darkTheme": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/giscus.css",
+
+    "lang": "en"
   },
+  
+  "utterances": {
+    "repo": "bthavanish/blog",
+    "issueTerm": "pathname",
+    "label": "comment",
+    "lightTheme": "github-light",
+    "darkTheme": "github-dark"
+  },
+
+  "disqus": {
+    "shortname": "your-disqus-shortname"
+  }
+},
   
   "documents": [
     {
