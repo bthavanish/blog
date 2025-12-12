@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="bthavanish's personal blog">
     <title>bthavanish's blog</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="reading-progress" id="readingProgress"></div>
@@ -120,6 +120,12 @@
                             <p>Hang tight, loading your content...</p>
                         </div>
                     </article>
+                    
+                    <!-- Comments Section -->
+                    <div class="comments-card" id="commentsSection" style="display: none;">
+                        <h2 class="comments-title">Comments</h2>
+                        <div id="commentsContainer"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -159,6 +165,6 @@
     </button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
