@@ -303,6 +303,18 @@ class Router {
     }
 
     handleRoute() {
+        // Check if we have redirect params from 404 (these would still be in URL if script ran after router init)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('p')) {
+            // The index.html script should have handled this already
+            // But if we got here, handle it now
+            const path = urlParams.get('p');
+            const query = urlParams.get('q');
+            const newUrl = '/blog' + path + (query ? '?' + query.replace(/~and~/g, '&') : '');
+            window.history.replaceState(null, '', newUrl);
+            // Fall through to normal routing with the new URL
+        }
+        
         const path = window.location.pathname;
         const basePath = '/blog';
         
