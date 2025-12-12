@@ -15,11 +15,12 @@
             var pathSegment = l.pathname.replace('/blog/', '');
             
             if (pathSegment && pathSegment !== '404.html') {
-                var search = l.search.slice(1);
+                var search = l.search;
                 // Encode the path and search into query format
+                // Use encodeURIComponent to preserve special characters in query params
                 l.replace(
-                    '/blog/?p=/' + pathSegment + 
-                    (search ? '&q=' + search.replace(/&/g, '~and~') : '') +
+                    '/blog/?p=/' + encodeURIComponent(pathSegment) + 
+                    (search ? '&q=' + encodeURIComponent(search.slice(1)) : '') +
                     l.hash
                 );
             }
