@@ -304,33 +304,6 @@ class Router {
 
     handleRoute() {
         const path = window.location.pathname;
-        const search = window.location.search;
-        const basePath = '/blog';
-        
-        // Handle GitHub Pages SPA redirect format: /?/path&query=value
-        if (search && search.startsWith('?/')) {
-            // Parse the encoded format
-            const parts = search.slice(2).split('&');
-            const pathPart = parts[0];
-            const queryParts = parts.slice(1);
-            
-            // Reconstruct the proper URL
-            const properPath = basePath + '/' + pathPart;
-            const properQuery = queryParts.length > 0 ? '?' + queryParts.map(p => p.replace(/~and~/g, '&')).join('&') : '';
-            
-            // Replace the URL without reloading
-            window.history.replaceState(null, '', properPath + properQuery);
-            
-            // Now route to the proper path
-            this.routeToPath(properPath, properQuery);
-            return;
-        }
-        
-        // Normal routing
-        this.routeToPath(path, search);
-    }
-    
-    routeToPath(path, search) {
         const basePath = '/blog';
         
         // Remove base path for GitHub Pages
