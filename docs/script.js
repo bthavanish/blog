@@ -285,7 +285,6 @@ const appState = new AppState();
 class Router {
     constructor() {
         this.routes = {};
-        this.init();
     }
 
     init() {
@@ -920,9 +919,22 @@ class HomeScreenManager {
 
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', async () => {
+    // Add immediate visual feedback that script is running
+    const loadingDebug = document.createElement('div');
+    loadingDebug.style.cssText = 'position: fixed; top: 10px; right: 10px; background: green; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000;';
+    loadingDebug.textContent = 'Script loading...';
+    document.body.appendChild(loadingDebug);
+    
     // Load configuration first
     const configLoaded = await appState.loadConfig();
-    if (!configLoaded) return;
+    if (!configLoaded) {
+        loadingDebug.style.background = 'red';
+        loadingDebug.textContent = 'Config failed to load!';
+        return;
+    }
+    
+    loadingDebug.textContent = `Config loaded. Docs: ${appState.documents.length}`;
+    setTimeout(() => loadingDebug.remove(), 3000);
     
     // Update UI with config
     document.getElementById('siteTitle').textContent = appState.config.siteTitle || 'Blog';
@@ -953,6 +965,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize home screen
     const homeManager = new HomeScreenManager();
     homeManager.init();
+    
+    // NOW initialize router after config is loaded
+    router.init();
     
     // Initialize navigation
     document.getElementById('siteTitle').addEventListener('click', () => {
