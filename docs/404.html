@@ -15,21 +15,6 @@
             
             if (redirect && redirect !== location.href) {
                 history.replaceState(null, null, redirect);
-            } else {
-                // Check if this is a Giscus OAuth callback
-                var search = location.search;
-                var isGiscusCallback = search.includes('code=') && search.includes('state=');
-                
-                if (isGiscusCallback) {
-                    // For Giscus callbacks, redirect to index.html with full query string
-                    location.replace('/blog/' + search + (location.hash || ''));
-                } else {
-                    // For regular 404s, redirect to home
-                    var path = location.pathname;
-                    if (path && path !== '/') {
-                        location.replace('/blog/');
-                    }
-                }
             }
         })();
     </script>
