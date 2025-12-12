@@ -1,0 +1,32 @@
+{
+  "siteTitle": "bthavanish's blog",
+  "siteDescription": "A personal blog about consciousness, AI, and technology",
+  "heroTitle": "Select a blog to open",
+  "heroSubtitle": "more will be added in the future..",
+  "footer": "© 2025 bthavanish. All rights reserved. | <a href='https://github.com/bthavanish' target='_blank'>GitHub</a>",
+  
+  "theme": {
+    "accent": "#cd7c53",
+    "accentHover": "#b36a44",
+    "accentLight": "#f4ede8"
+  },
+  
+  "documents": [
+    {
+      "title": "Consciousness Theory",
+      "slug": "consciousness-theory",
+      "description": "A theory about consciousness, self-models, and the future of AI",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/consciousness-theory.md",
+      "date": "2025-01-15",
+      "tags": ["AI", "Philosophy", "Consciousness"]
+    },
+    {
+      "title": "Example Post",
+      "slug": "example-post",
+      "description": "This is an example blog post to demonstrate the structure",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/example.md",
+      "date": "2025-01-10",
+      "tags": ["Example", "Tutorial"]
+    }
+  ]
+}
