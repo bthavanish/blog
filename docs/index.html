@@ -6,6 +6,17 @@
     <meta name="description" content="bthavanish's personal blog">
     <title>bthavanish's blog</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- GitHub Pages SPA support -->
+    <script>
+        (function() {
+            var redirect = sessionStorage.redirect;
+            delete sessionStorage.redirect;
+            if (redirect && redirect !== location.href) {
+                history.replaceState(null, null, redirect);
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="reading-progress" id="readingProgress"></div>
