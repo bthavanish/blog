@@ -304,11 +304,33 @@ class Router {
 
     handleRoute() {
         const path = window.location.pathname;
-        const basePath = '/blog';
         const search = window.location.search;
+        const basePath = '/blog';
         
-        // Check if this is a Giscus callback (has giscus parameter)
-        const isGiscusCallback = search.includes('giscus=');
+        // Handle GitHub Pages SPA redirect format: /?/path&query=value
+        if (search && search.startsWith('?/')) {
+            // Parse the encoded format
+            const parts = search.slice(2).split('&');
+            const pathPart = parts[0];
+            const queryParts = parts.slice(1);
+            
+            // Reconstruct the proper URL
+            const properPath = basePath + '/' + pathPart;
+            const properQuery = queryParts.length > 0 ? '?' + queryParts.map(p => p.replace(/~and~/g, '&')).join('&') : '';
+            
+            // Replace the URL without reloading
+            window.history.replaceState(null, '', properPath + properQuery);
+            
+            // Now route to the proper path
+            this.routeToPath(properPath, properQuery);
+            return;
+        }
+        
+        this.routeToPath(path, search);
+    }
+    
+    routeToPath(path, search) {
+        const basePath = '/blog';
         
         // Remove base path for GitHub Pages
         let route = path.replace(basePath, '') || '/';
@@ -319,16 +341,21 @@ class Router {
         // Remove query parameters from route matching
         const cleanRoute = route.split('?')[0];
 
+        console.log('Routing to:', cleanRoute); // Debug log
+
         if (cleanRoute === '/' || cleanRoute === '') {
             appState.setHome();
         } else {
             const slug = cleanRoute.substring(1);
+            console.log('Looking for document with slug:', slug); // Debug log
             const doc = appState.documents.find(d => d.slug === slug);
             
             if (doc) {
+                console.log('Found document:', doc.title); // Debug log
                 appState.setDocument(doc);
                 new DocumentLoader().load(doc.url);
             } else {
+                console.log('Document not found, showing 404'); // Debug log
                 appState.show404();
             }
         }
