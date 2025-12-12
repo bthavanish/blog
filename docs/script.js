@@ -289,8 +289,11 @@ class Router {
     }
 
     init() {
-        window.addEventListener('popstate', () => this.handleRoute());
-        this.handleRoute();
+        // Wait a tick to ensure index.html redirect script runs first
+        setTimeout(() => {
+            window.addEventListener('popstate', () => this.handleRoute());
+            this.handleRoute();
+        }, 0);
     }
 
     addRoute(path, handler) {
@@ -303,16 +306,35 @@ class Router {
     }
 
     handleRoute() {
-        // Check if we have redirect params from 404 (these would still be in URL if script ran after router init)
+        // Visual debug info
+        const debugInfo = document.createElement('div');
+        debugInfo.style.cssText = 'position: fixed; top: 10px; right: 10px; background: black; color: lime; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
+        debugInfo.innerHTML = `
+            <div>URL: ${window.location.href}</div>
+            <div>Pathname: ${window.location.pathname}</div>
+            <div>Search: ${window.location.search}</div>
+        `;
+        document.body.appendChild(debugInfo);
+        setTimeout(() => debugInfo.remove(), 5000);
+        
+        // Check if we have redirect params from 404
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('p')) {
-            // The index.html script should have handled this already
-            // But if we got here, handle it now
             const path = urlParams.get('p');
             const query = urlParams.get('q');
             const newUrl = '/blog' + path + (query ? '?' + query.replace(/~and~/g, '&') : '');
+            
+            // Show redirect happening
+            const redirectInfo = document.createElement('div');
+            redirectInfo.style.cssText = 'position: fixed; top: 50px; right: 10px; background: blue; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
+            redirectInfo.innerHTML = `Redirecting to: ${newUrl}`;
+            document.body.appendChild(redirectInfo);
+            setTimeout(() => redirectInfo.remove(), 5000);
+            
             window.history.replaceState(null, '', newUrl);
-            // Fall through to normal routing with the new URL
+            // Recursively call handleRoute with the corrected URL
+            this.handleRoute();
+            return;
         }
         
         const path = window.location.pathname;
@@ -337,6 +359,16 @@ class Router {
                 appState.setDocument(doc);
                 new DocumentLoader().load(doc.url);
             } else {
+                // Show why 404
+                const notFoundInfo = document.createElement('div');
+                notFoundInfo.style.cssText = 'position: fixed; top: 90px; right: 10px; background: red; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
+                notFoundInfo.innerHTML = `
+                    <div>404: Slug '${slug}' not found</div>
+                    <div>Available docs: ${appState.documents.map(d => d.slug).join(', ')}</div>
+                `;
+                document.body.appendChild(notFoundInfo);
+                setTimeout(() => notFoundInfo.remove(), 10000);
+                
                 appState.show404();
             }
         }
