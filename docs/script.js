@@ -1,5 +1,5 @@
 // === CONFIGURATION ===
-const CONFIG_URL = 'https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/docs/config.json';
+const CONFIG_URL = './config.json';
 
 // === COMMENTS MANAGER ===
 class CommentsManager {
