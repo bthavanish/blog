@@ -307,8 +307,8 @@ class Router {
         const basePath = '/blog';
         const search = window.location.search;
         
-        // Check if this is a Giscus OAuth callback
-        const isGiscusCallback = search.includes('code=') && search.includes('state=');
+        // Check if this is a Giscus callback (has giscus parameter)
+        const isGiscusCallback = search.includes('giscus=');
         
         // Remove base path for GitHub Pages
         let route = path.replace(basePath, '') || '/';
@@ -320,9 +320,7 @@ class Router {
         const cleanRoute = route.split('?')[0];
 
         if (cleanRoute === '/' || cleanRoute === '') {
-            // If it's a Giscus callback on the home page, stay on home but preserve query params
             appState.setHome();
-            // Giscus will handle the callback automatically via the iframe
         } else {
             const slug = cleanRoute.substring(1);
             const doc = appState.documents.find(d => d.slug === slug);
@@ -331,12 +329,7 @@ class Router {
                 appState.setDocument(doc);
                 new DocumentLoader().load(doc.url);
             } else {
-                // Don't show 404 for Giscus callbacks, redirect to home instead
-                if (isGiscusCallback) {
-                    this.navigate(basePath + '/' + search);
-                } else {
-                    appState.show404();
-                }
+                appState.show404();
             }
         }
     }
