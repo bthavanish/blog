@@ -326,6 +326,7 @@ class Router {
             return;
         }
         
+        // Normal routing
         this.routeToPath(path, search);
     }
     
@@ -341,21 +342,16 @@ class Router {
         // Remove query parameters from route matching
         const cleanRoute = route.split('?')[0];
 
-        console.log('Routing to:', cleanRoute); // Debug log
-
         if (cleanRoute === '/' || cleanRoute === '') {
             appState.setHome();
         } else {
             const slug = cleanRoute.substring(1);
-            console.log('Looking for document with slug:', slug); // Debug log
             const doc = appState.documents.find(d => d.slug === slug);
             
             if (doc) {
-                console.log('Found document:', doc.title); // Debug log
                 appState.setDocument(doc);
                 new DocumentLoader().load(doc.url);
             } else {
-                console.log('Document not found, showing 404'); // Debug log
                 appState.show404();
             }
         }
