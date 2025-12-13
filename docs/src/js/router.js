@@ -101,6 +101,16 @@ class Router {
         if (window.readingProgress) {
             window.readingProgress.hide();
         }
+        
+        // Clear TOC
+        if (window.toc) {
+            window.toc.clear();
+        }
+        
+        // Hide mobile TOC button
+        if (window.mobileTOC) {
+            window.mobileTOC.hide();
+        }
     }
 
     // Show post view
