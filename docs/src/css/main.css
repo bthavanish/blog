@@ -1,4 +1,4 @@
-/* Fixed Main Layout Styles */
+
 
 /* ===========================
    READING PROGRESS BAR
@@ -328,7 +328,7 @@
 
 .post-layout {
     display: grid;
-    grid-template-columns: 220px 1fr 60px;
+    grid-template-columns: 220px 1fr 140px;
     gap: var(--space-8);
     align-items: start;
 }
@@ -417,6 +417,7 @@
     font-size: clamp(2rem, 4vw, 2.5rem);
     margin-bottom: var(--space-6);
     line-height: var(--leading-tight);
+    color: var(--text);
 }
 
 .content-area h2 {
@@ -425,32 +426,38 @@
     margin-bottom: var(--space-4);
     padding-bottom: var(--space-3);
     border-bottom: 2px solid var(--primary);
+    color: var(--text);
 }
 
 .content-area h3 {
     font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     margin-top: var(--space-10);
     margin-bottom: var(--space-3);
+    color: var(--text);
 }
 
 .content-area h4 {
     font-size: clamp(1.125rem, 2vw, 1.25rem);
     margin-top: var(--space-8);
     margin-bottom: var(--space-3);
+    color: var(--text);
 }
 
 .content-area p {
     margin-bottom: var(--space-6);
+    color: var(--text);
 }
 
 .content-area ul,
 .content-area ol {
     margin-left: var(--space-6);
     margin-bottom: var(--space-6);
+    color: var(--text);
 }
 
 .content-area li {
     margin-bottom: var(--space-3);
+    color: var(--text);
 }
 
 .content-area a {
@@ -469,6 +476,7 @@
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
     font-size: 0.875em;
+    color: var(--text);
 }
 
 .content-area pre {
@@ -484,6 +492,7 @@
     background: none;
     padding: 0;
     font-size: 0.9em;
+    color: var(--text);
 }
 
 .content-area blockquote {
@@ -492,6 +501,7 @@
     padding: var(--space-6);
     margin: var(--space-8) 0;
     font-style: italic;
+    color: var(--text);
 }
 
 .content-area hr {
@@ -524,6 +534,7 @@
     padding: var(--space-4);
     text-align: left;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
 }
 
 .content-area th {
@@ -579,6 +590,34 @@
     stroke: var(--primary);
 }
 
+/* Text Size Buttons */
+.text-size-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.text-size-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text);
+}
+
+.text-size-btn:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 /* ===========================
    COMMENTS SECTION
    =========================== */
@@ -592,6 +631,7 @@
     font-size: var(--text-2xl);
     font-weight: var(--font-semibold);
     margin-bottom: var(--space-8);
+    color: var(--text);
 }
 
 #commentsContainer {
@@ -602,11 +642,15 @@
    ERROR VIEW
    =========================== */
 .error-view {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 64px - 80px);
     padding: var(--space-8);
+}
+
+.error-view.active {
+    display: flex;
 }
 
 .error-container {
@@ -624,6 +668,7 @@
 .error-title {
     font-size: var(--text-3xl);
     margin-bottom: var(--space-4);
+    color: var(--text);
 }
 
 .error-text {
