@@ -249,6 +249,7 @@ class TOCManager {
         this.mobileNav = document.getElementById('tocMobileNav');
         this.sidebar = document.getElementById('tocSidebar');
         this.headings = [];
+        this.observer = null;
     }
 
     generate(contentElement) {
@@ -268,8 +269,9 @@ class TOCManager {
         if (this.desktopNav) this.desktopNav.innerHTML = tocHTML;
         if (window.mobileTOC) window.mobileTOC.update(tocHTML);
         
-        this.setupActiveTracking();
+        // Setup click handlers first, then active tracking
         this.setupClickHandlers();
+        setTimeout(() => this.setupActiveTracking(), 200);
     }
 
     createTOCHTML() {
@@ -295,8 +297,29 @@ class TOCManager {
                 e.preventDefault();
                 const targetId = link.dataset.id;
                 const target = document.getElementById(targetId);
+                
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Get header height for offset
+                    const header = document.querySelector('.site-header');
+                    const headerHeight = header ? header.offsetHeight : 64;
+                    
+                    // Calculate position with offset
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                    const offsetPosition = targetPosition - headerHeight - 20; // 20px extra padding
+                    
+                    // Smooth scroll to position
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update active link immediately
+                    links.forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`[data-id="${targetId}"]`).forEach(l => {
+                        l.classList.add('active');
+                    });
+                    
+                    // Close mobile TOC if open
                     if (window.mobileTOC) {
                         window.mobileTOC.close();
                     }
@@ -306,12 +329,20 @@ class TOCManager {
     }
 
     setupActiveTracking() {
+        // Disconnect previous observer if exists
+        if (this.observer) {
+            this.observer.disconnect();
+        }
+
         const links = document.querySelectorAll('.toc-link');
         
-        const observer = new IntersectionObserver((entries) => {
+        this.observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
+                    // Remove active from all links
                     links.forEach(link => link.classList.remove('active'));
+                    
+                    // Add active to current section links
                     const activeLinks = document.querySelectorAll(`[data-id="${entry.target.id}"]`);
                     activeLinks.forEach(link => link.classList.add('active'));
                 }
@@ -321,14 +352,25 @@ class TOCManager {
             threshold: 0
         });
 
-        this.headings.forEach(heading => observer.observe(heading));
+        this.headings.forEach(heading => {
+            if (heading.id) {
+                this.observer.observe(heading);
+            }
+        });
     }
 
     clear() {
+        if (this.observer) {
+            this.observer.disconnect();
+            this.observer = null;
+        }
+        
         if (this.desktopNav) this.desktopNav.innerHTML = '';
         if (this.mobileNav) this.mobileNav.innerHTML = '';
         if (this.sidebar) this.sidebar.style.display = 'none';
         if (window.mobileTOC) window.mobileTOC.hide();
+        
+        this.headings = [];
     }
 
     escapeHtml(text) {
