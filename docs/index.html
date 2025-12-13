@@ -41,10 +41,10 @@
         <div class="header-container">
             <div class="header-left">
                 <button class="logo-btn" id="logoBtn">
-                    <svg class="logo-icon" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+                    <svg class="logo-icon" id="logoIcon" viewBox="0 0 24 24">
+                       <!--<path d="M12 2L2 7L12 12L22 7L12 2Z" />
                         <path d="M2 17L12 22L22 17" />
-                        <path d="M2 12L12 17L22 12" />
+                        <path d="M2 12L12 17L22 12" />-->
                     </svg>
                     <span class="logo-text" id="siteTitle">Loading...</span>
                 </button>
@@ -185,13 +185,17 @@
                                     <rect x="6" y="14" width="12" height="8"/>
                                 </svg>
                             </button>
-                            <button class="action-btn" id="textSizeBtn" aria-label="Text size" title="Text size">
-                                <svg viewBox="0 0 24 24">
-                                    <polyline points="4 7 4 4 20 4 20 7"/>
-                                    <line x1="9" y1="20" x2="15" y2="20"/>
-                                    <line x1="12" y1="4" x2="12" y2="20"/>
-                                </svg>
-                            </button>
+                            <div class="text-size-controls">
+                                <button class="text-size-btn" id="textSizeIncrease" aria-label="Increase text size" title="Increase text size">
+                                    A+
+                                </button>
+                                <button class="text-size-btn" id="textSizeReset" aria-label="Reset text size" title="Reset text size">
+                                    A
+                                </button>
+                                <button class="text-size-btn" id="textSizeDecrease" aria-label="Decrease text size" title="Decrease text size">
+                                    A-
+                                </button>
+                            </div>
                         </div>
                     </aside>
                 </div>
