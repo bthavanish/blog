@@ -6,18 +6,20 @@
     <title>Redirecting...</title>
     <script>
         // Single Page Apps for GitHub Pages
-        // This script converts 404 paths into query strings that index.html can handle
+        // Convert 404 paths into query strings that index.html can handle
         (function(l) {
+            // Don't redirect the 404 page itself
             if (l.pathname === '/blog/404.html') {
-                return; // Don't redirect the 404 page itself
+                return;
             }
             
+            // Extract the path after /blog/
             var pathSegment = l.pathname.replace('/blog/', '');
             
+            // If there's a valid path segment, redirect
             if (pathSegment && pathSegment !== '404.html') {
                 var search = l.search;
                 // Encode the path and search into query format
-                // Use encodeURIComponent to preserve special characters in query params
                 l.replace(
                     '/blog/?p=/' + encodeURIComponent(pathSegment) + 
                     (search ? '&q=' + encodeURIComponent(search.slice(1)) : '') +
@@ -26,47 +28,143 @@
             }
         }(window.location));
     </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .error-container {
+            max-width: 500px;
+        }
+        
+        .error-icon {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 2rem auto 1rem;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .redirecting {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <div class="error-container">
+        <div class="error-icon">🔍</div>
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p id="message">The page you're looking for doesn't exist or may have been moved.</p>
+        
+        <div class="redirecting" id="redirecting">
+            <div class="spinner"></div>
+            <p>Redirecting...</p>
+        </div>
+        
+        <a href="/blog/" id="homeLink">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Go Home
+        </a>
+    </div>
+    
     <noscript>
         <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                margin: 0;
-                padding: 2rem;
-                text-align: center;
-            }
-            .error {
-                max-width: 500px;
-            }
-            h1 {
-                font-size: 3rem;
-                margin-bottom: 1rem;
-                color: #cd7c53;
-            }
-            p {
-                color: #666;
-                margin-bottom: 1.5rem;
-            }
-            a {
-                display: inline-block;
-                padding: 0.75rem 1.5rem;
-                background: #cd7c53;
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-            }
+            .error-icon { display: none; }
+            .redirecting { display: none !important; }
         </style>
-        <div class="error">
-            <h1>404</h1>
-            <h2>Page Not Found</h2>
-            <p>JavaScript is required to view this site.</p>
-            <a href="/blog/">Go Home</a>
+        <div style="position: fixed; top: 0; left: 0; right: 0; padding: 1rem; background: rgba(255, 255, 255, 0.95); color: #1f2937; text-align: center; font-size: 0.875rem;">
+            JavaScript is required for this blog. Please enable JavaScript to continue.
         </div>
     </noscript>
+    
+    <script>
+        // Show redirecting message if we're actually redirecting
+        if (window.location.search.includes('p=')) {
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('homeLink').style.display = 'none';
+            document.getElementById('redirecting').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
