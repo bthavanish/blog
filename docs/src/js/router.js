@@ -233,16 +233,20 @@ class Router {
                 window.initializeImageGalleries();
             }
 
-            // Generate table of contents
+            // Generate table of contents - with delay and null check
             if (window.toc) {
-                // Small delay to ensure content is rendered
                 setTimeout(() => {
-                    window.toc.generate(contentArea);
-                }, 100);
+                    const postContent = document.getElementById('postContent');
+                    if (postContent) {
+                        window.toc.generate(postContent);
+                    }
+                }, 200);
             }
 
-            // Load comments if enabled
-            this.loadComments(post);
+            // Load comments if enabled - with delay
+            setTimeout(() => {
+                this.loadComments(post);
+            }, 300);
 
             // Apply saved text size
             if (window.textSizeController) {
@@ -265,6 +269,8 @@ class Router {
     // Add reading time indicator
     addReadingTime(minutes) {
         const contentArea = document.getElementById('postContent');
+        if (!contentArea) return;
+        
         const firstHeading = contentArea.querySelector('h1, h2');
         
         if (firstHeading && !contentArea.querySelector('.reading-time')) {
@@ -287,7 +293,7 @@ class Router {
         const commentsSection = document.getElementById('commentsSection');
         const commentsContainer = document.getElementById('commentsContainer');
         
-        if (!config?.features?.comments?.enabled || !commentsSection) {
+        if (!config?.features?.comments?.enabled || !commentsSection || !commentsContainer) {
             if (commentsSection) commentsSection.style.display = 'none';
             return;
         }
@@ -320,11 +326,14 @@ class Router {
         }
     }
 
-    // Load Giscus comments
+    // Load Giscus comments with unique discussion per post
     loadGiscus(post) {
         const settings = window.appConfig.features.comments.giscus;
         const container = document.getElementById('commentsContainer');
         
+        if (!container) return;
+        
+        // Clear any existing content
         container.innerHTML = '';
 
         const script = document.createElement('script');
@@ -334,25 +343,27 @@ class Router {
         script.setAttribute('data-category', settings.category || 'General');
         script.setAttribute('data-category-id', settings.categoryId || '');
         
-        // Use specific mapping to create separate discussions per post
-        script.setAttribute('data-mapping', settings.mapping || 'specific');
+        // CRITICAL: Use 'title' mapping and set unique title per post
+        script.setAttribute('data-mapping', 'title');
+        script.setAttribute('data-term', `Blog: ${post.title}`);
         
-        // If using specific mapping, set the term to the post slug
-        if (settings.mapping === 'specific' || !settings.mapping) {
-            script.setAttribute('data-term', post.slug);
-        }
-        
-        script.setAttribute('data-strict', settings.strict ? '1' : '0');
+        script.setAttribute('data-strict', '0');
         script.setAttribute('data-reactions-enabled', settings.reactionsEnabled ? '1' : '0');
         script.setAttribute('data-emit-metadata', '0');
         script.setAttribute('data-input-position', 'bottom');
-        script.setAttribute('data-theme', window.themeManager.getTheme());
+        
+        // Set theme based on current theme
+        const theme = window.themeManager?.getTheme() === 'dark' ? 'dark' : 'light';
+        script.setAttribute('data-theme', theme);
+        
         script.setAttribute('data-lang', 'en');
         script.setAttribute('data-loading', 'lazy');
         script.crossOrigin = 'anonymous';
         script.async = true;
 
         container.appendChild(script);
+        
+        console.log(`Loaded Giscus comments for: ${post.title}`);
     }
 
     // Load Utterances comments
@@ -360,14 +371,20 @@ class Router {
         const settings = window.appConfig.features.comments.utterances;
         const container = document.getElementById('commentsContainer');
         
+        if (!container) return;
+        
         container.innerHTML = '';
 
-        const theme = window.themeManager.getTheme() === 'dark' ? 'github-dark' : 'github-light';
+        const theme = window.themeManager?.getTheme() === 'dark' ? 'github-dark' : 'github-light';
 
         const script = document.createElement('script');
         script.src = 'https://utteranc.es/client.js';
         script.setAttribute('repo', settings.repo);
-        script.setAttribute('issue-term', settings.issueTerm || 'pathname');
+        
+        // Use title for unique discussions
+        script.setAttribute('issue-term', 'title');
+        script.setAttribute('issue-title', `Blog: ${post.title}`);
+        
         script.setAttribute('label', settings.label || 'comment');
         script.setAttribute('theme', theme);
         script.crossOrigin = 'anonymous';
@@ -381,11 +398,14 @@ class Router {
         const settings = window.appConfig.features.comments.disqus;
         const container = document.getElementById('commentsContainer');
         
+        if (!container) return;
+        
         container.innerHTML = '<div id="disqus_thread"></div>';
 
         window.disqus_config = function() {
             this.page.url = window.location.href;
             this.page.identifier = post.slug;
+            this.page.title = post.title;
         };
 
         const script = document.createElement('script');
