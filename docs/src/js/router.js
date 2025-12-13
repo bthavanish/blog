@@ -169,6 +169,27 @@ class Router {
         views.forEach(view => view.classList.remove('active'));
     }
 
+    // Calculate reading time from markdown content
+    calculateReadingTime(markdown) {
+        // Remove markdown syntax
+        let text = markdown
+            .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+            .replace(/`[^`]*`/g, '') // Remove inline code
+            .replace(/!\[.*?\]\(.*?\)/g, '') // Remove images
+            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links, keep text
+            .replace(/[#*_~`]/g, '') // Remove markdown formatting
+            .replace(/^\s*[-*+]\s+/gm, '') // Remove list markers
+            .replace(/^\s*\d+\.\s+/gm, ''); // Remove numbered list markers
+        
+        // Count words
+        const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        
+        // Average reading speed: 200 words per minute
+        const minutes = Math.ceil(words / 200);
+        
+        return Math.max(1, minutes); // At least 1 minute
+    }
+
     // Load post content
     async loadPostContent(post) {
         const contentArea = document.getElementById('postContent');
@@ -191,6 +212,9 @@ class Router {
 
             const markdown = await response.text();
             
+            // Calculate reading time from actual content
+            const readTime = this.calculateReadingTime(markdown);
+            
             // Parse markdown with enhancements
             const parser = new EnhancedMarkdown(window.appConfig);
             const html = parser.parse(markdown);
@@ -198,10 +222,8 @@ class Router {
             // Display content
             contentArea.innerHTML = html;
 
-            // Add reading time if available
-            if (post.readTime) {
-                this.addReadingTime(post.readTime);
-            }
+            // Add reading time
+            this.addReadingTime(readTime);
 
             // Initialize enhanced media
             if (window.initializeMusicPlayers) {
@@ -213,7 +235,10 @@ class Router {
 
             // Generate table of contents
             if (window.toc) {
-                window.toc.generate(contentArea);
+                // Small delay to ensure content is rendered
+                setTimeout(() => {
+                    window.toc.generate(contentArea);
+                }, 100);
             }
 
             // Load comments if enabled
@@ -308,7 +333,15 @@ class Router {
         script.setAttribute('data-repo-id', settings.repoId || '');
         script.setAttribute('data-category', settings.category || 'General');
         script.setAttribute('data-category-id', settings.categoryId || '');
-        script.setAttribute('data-mapping', settings.mapping || 'pathname');
+        
+        // Use specific mapping to create separate discussions per post
+        script.setAttribute('data-mapping', settings.mapping || 'specific');
+        
+        // If using specific mapping, set the term to the post slug
+        if (settings.mapping === 'specific' || !settings.mapping) {
+            script.setAttribute('data-term', post.slug);
+        }
+        
         script.setAttribute('data-strict', settings.strict ? '1' : '0');
         script.setAttribute('data-reactions-enabled', settings.reactionsEnabled ? '1' : '0');
         script.setAttribute('data-emit-metadata', '0');
