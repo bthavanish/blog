@@ -34,7 +34,7 @@
 </head>
 <body>
     <!-- Reading Progress Bar -->
-    <div class="reading-progress" id="readingProgress"></div>
+    <div class="reading-progress" id="readingProgress" style="display: none;"></div>
     
     <!-- Header -->
     <header class="site-header" id="siteHeader">
@@ -75,15 +75,11 @@
                     </svg>
                 </button>
                 
-                <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-                    <svg class="menu-icon" viewBox="0 0 24 24">
+                <button class="icon-btn mobile-toc-btn" id="mobileTocBtn" aria-label="Table of contents" style="display: none;">
+                    <svg viewBox="0 0 24 24">
                         <line x1="3" y1="12" x2="21" y2="12"/>
                         <line x1="3" y1="6" x2="21" y2="6"/>
                         <line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                    <svg class="close-icon hidden" viewBox="0 0 24 24">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                 </button>
             </nav>
@@ -119,7 +115,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Home View -->
-        <div class="view home-view" id="homeView">
+        <div class="view home-view active" id="homeView">
             <div class="container">
                 <section class="hero">
                     <h1 class="hero-title" id="heroTitle">Loading...</h1>
@@ -130,8 +126,8 @@
                     <div class="posts-grid" id="postsGrid">
                         <!-- Posts will be inserted here -->
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
 
         <!-- Post View -->
@@ -146,15 +142,15 @@
                 </button>
 
                 <div class="post-layout">
-                    <!-- Table of Contents Sidebar -->
-                    <aside class="toc-sidebar" id="tocSidebar">
+                    <!-- Desktop TOC Sidebar -->
+                    <aside class="toc-sidebar desktop-only" id="tocSidebar" style="display: none;">
                         <div class="toc-sticky">
                             <h3 class="toc-title">Contents</h3>
                             <nav class="toc-nav" id="tocNav"></nav>
                         </div>
                     </aside>
 
-                    <!-- Post Content -->
+                    <!-- Main Content -->
                     <article class="post-content">
                         <div id="postContent" class="content-area">
                             <div class="loading-state">
@@ -171,7 +167,7 @@
                     </article>
 
                     <!-- Post Actions Sidebar -->
-                    <aside class="actions-sidebar" id="actionsSidebar">
+                    <aside class="actions-sidebar desktop-only" id="actionsSidebar">
                         <div class="actions-sticky">
                             <button class="action-btn" id="shareBtn" aria-label="Share" title="Share">
                                 <svg viewBox="0 0 24 24">
