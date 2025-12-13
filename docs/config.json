@@ -1,55 +1,138 @@
 {
-  "siteTitle": "bthavanish's blog",
-  "siteDescription": "A personal blog about me ",
-  "heroTitle": "Select a blog to open",
-  "heroSubtitle": "more will be added in the future..",
-  "footer": "© 2025 bthavanish. All rights reserved. | <a href='https://github.com/bthavanish' target='_blank'>GitHub</a>",
+  "site": {
+    "title": "bthavanish's blog",
+    "description": "A personal blog about consciousness, AI, and technology",
+    "author": "bthavanish",
+    "url": "https://bthavanish.github.io/blog",
+    "language": "en"
+  },
+  
+  "ui": {
+    "hero": {
+      "title": "Select a blog to open",
+      "subtitle": "more will be added in the future..",
+      "showSearchBar": true,
+      "showFeaturedPosts": true
+    },
+    "header": {
+      "showLogo": true,
+      "showSearch": true,
+      "showThemeToggle": true,
+      "sticky": true
+    },
+    "footer": {
+      "text": "© 2025 bthavanish. All rights reserved.",
+      "links": [
+        {
+          "text": "GitHub",
+          "url": "https://github.com/bthavanish",
+          "icon": "github"
+        },
+        {
+          "text": "Twitter",
+          "url": "https://twitter.com/bthavanish",
+          "icon": "twitter"
+        }
+      ]
+    },
+    "layout": {
+      "maxWidth": "1280px",
+      "contentWidth": "800px",
+      "showTableOfContents": true,
+      "showReadingProgress": true,
+      "showReadingTime": true,
+      "showShareButtons": true
+    }
+  },
   
   "theme": {
-    "accent": "#cd7c53",
-    "accentHover": "#b36a44",
-    "accentLight": "#f4ede8"
-  },
-  
-  "comments": {
-    "enabled": true,
-    "provider": "giscus",
-    
-    "giscus": {
-      "repo": "bthavanish/blog",
-      "repoId": "R_kgDOQE2OUg",
-      "category": "General",
-      "categoryId": "DIC_kwDOQE2OUs4Czrjb",
-      "mapping": "pathname",
-      "strict": "0",
-      "reactionsEnabled": "1",
-      "inputPosition": "bottom",
-      "lightTheme": "light",
-      "darkTheme": "dark",
-      "lang": "en"
+    "default": "light",
+    "colors": {
+      "light": {
+        "primary": "#cd7c53",
+        "primaryHover": "#b36a44",
+        "primaryLight": "#f4ede8",
+        "background": "#ffffff",
+        "backgroundSecondary": "#f9fafb",
+        "text": "#1f2937",
+        "textSecondary": "#6b7280",
+        "border": "#e5e7eb"
+      },
+      "dark": {
+        "primary": "#d4906f",
+        "primaryHover": "#e0a280",
+        "primaryLight": "#2a2320",
+        "background": "#0f0f0f",
+        "backgroundSecondary": "#1a1a1a",
+        "text": "#f5f5f5",
+        "textSecondary": "#a3a3a3",
+        "border": "#333333"
+      }
     },
-    
-    "utterances": {
-      "repo": "bthavanish/blog",
-      "issueTerm": "pathname",
-      "label": "comment",
-      "lightTheme": "gruvbox-light",
-      "darkTheme": "gruvbox-dark"
+    "fonts": {
+      "body": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "heading": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "'Monaco', 'Courier New', monospace"
     },
-    
-    "disqus": {
-      "shortname": "your-disqus-shortname"
+    "borderRadius": {
+      "small": "8px",
+      "medium": "12px",
+      "large": "16px"
     }
   },
   
-  "documents": [
-    {
-      "title": "Consciousness Theory",
-      "slug": "consciousness-theory",
-      "description": "A theory about consciousness, self-models, and the future of AI",
-      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/consciousness-theory.md",
-      "date": "2025-01-15",
-      "tags": ["AI", "Philosophy", "Consciousness"]
+  "features": {
+    "search": {
+      "enabled": true,
+      "placeholder": "Search articles...",
+      "fuzzySearch": true
+    },
+    "comments": {
+      "enabled": true,
+      "provider": "giscus",
+      "giscus": {
+        "repo": "bthavanish/blog",
+        "repoId": "R_kgDOQE2OUg",
+        "category": "General",
+        "categoryId": "DIC_kwDOQE2OUs4Czrjb",
+        "mapping": "pathname",
+        "reactionsEnabled": true,
+        "theme": "preferred_color_scheme"
+      }
+    },
+    "analytics": {
+      "enabled": false,
+      "provider": "google",
+      "id": ""
+    },
+    "rss": {
+      "enabled": false,
+      "url": "/feed.xml"
+    },
+    "pwa": {
+      "enabled": false,
+      "name": "bthavanish's blog",
+      "shortName": "Blog",
+      "theme": "#cd7c53"
     }
-  ]
+  },
+  
+  "markdown": {
+    "syntaxHighlighting": true,
+    "mathSupport": false,
+    "mermaidSupport": false,
+    "enhancedMedia": {
+      "downloadBoxes": true,
+      "musicPlayer": true,
+      "pdfViewer": true,
+      "videoPlayer": true,
+      "imageGallery": true
+    }
+  },
+  
+  "performance": {
+    "lazyLoadImages": true,
+    "lazyLoadComments": true,
+    "preloadNextPost": false
+  }
 }
