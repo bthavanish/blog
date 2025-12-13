@@ -90,12 +90,20 @@ class SearchManager {
     }
 
     setupEventListeners() {
-        this.searchBtn.addEventListener('click', () => this.open());
-        this.closeBtn.addEventListener('click', () => this.close());
-        this.overlay.addEventListener('click', (e) => {
-            if (e.target === this.overlay) this.close();
-        });
-        this.input.addEventListener('input', (e) => this.search(e.target.value));
+        if (this.searchBtn) {
+            this.searchBtn.addEventListener('click', () => this.open());
+        }
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.close());
+        }
+        if (this.overlay) {
+            this.overlay.addEventListener('click', (e) => {
+                if (e.target === this.overlay) this.close();
+            });
+        }
+        if (this.input) {
+            this.input.addEventListener('input', (e) => this.search(e.target.value));
+        }
 
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -109,16 +117,20 @@ class SearchManager {
     }
 
     open() {
-        this.overlay.classList.add('active');
-        this.input.focus();
-        document.body.style.overflow = 'hidden';
+        if (this.overlay && this.input) {
+            this.overlay.classList.add('active');
+            this.input.focus();
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     close() {
-        this.overlay.classList.remove('active');
-        this.input.value = '';
-        this.results.innerHTML = '';
-        document.body.style.overflow = '';
+        if (this.overlay && this.input && this.results) {
+            this.overlay.classList.remove('active');
+            this.input.value = '';
+            this.results.innerHTML = '';
+            document.body.style.overflow = '';
+        }
     }
 
     setPosts(posts) {
@@ -126,6 +138,8 @@ class SearchManager {
     }
 
     search(query) {
+        if (!this.results) return;
+        
         if (!query.trim()) {
             this.results.innerHTML = '';
             return;
@@ -141,6 +155,8 @@ class SearchManager {
     }
 
     displayResults(matches) {
+        if (!this.results) return;
+        
         if (matches.length === 0) {
             this.results.innerHTML = `
                 <div class="search-no-results">
@@ -169,7 +185,9 @@ class SearchManager {
         this.results.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', () => {
                 const slug = item.dataset.slug;
-                window.router.navigate(`/${slug}`);
+                if (window.router) {
+                    window.router.navigate(`/${slug}`);
+                }
                 this.close();
             });
         });
@@ -242,7 +260,7 @@ class MobileTOCManager {
     }
 }
 
-// Table of Contents Manager
+// Table of Contents Manager - SAFER VERSION
 class TOCManager {
     constructor() {
         this.desktopNav = document.getElementById('tocNav');
@@ -253,6 +271,12 @@ class TOCManager {
     }
 
     generate(contentElement) {
+        // Safety check
+        if (!contentElement) {
+            console.warn('TOC: No content element provided');
+            return;
+        }
+        
         this.headings = Array.from(contentElement.querySelectorAll('h2, h3'));
         
         if (this.headings.length === 0) {
@@ -271,7 +295,7 @@ class TOCManager {
         
         // Setup click handlers first, then active tracking
         this.setupClickHandlers();
-        setTimeout(() => this.setupActiveTracking(), 200);
+        setTimeout(() => this.setupActiveTracking(), 300);
     }
 
     createTOCHTML() {
@@ -280,7 +304,7 @@ class TOCManager {
             heading.id = id;
             
             const level = heading.tagName === 'H2' ? 2 : 3;
-            const text = heading.textContent;
+            const text = heading.textContent || 'Untitled';
             
             return `
                 <a href="#${id}" class="toc-link level-${level}" data-id="${id}">
@@ -335,10 +359,11 @@ class TOCManager {
         }
 
         const links = document.querySelectorAll('.toc-link');
+        if (links.length === 0 || this.headings.length === 0) return;
         
         this.observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
+                if (entry.isIntersecting && entry.target.id) {
                     // Remove active from all links
                     links.forEach(link => link.classList.remove('active'));
                     
@@ -353,7 +378,7 @@ class TOCManager {
         });
 
         this.headings.forEach(heading => {
-            if (heading.id) {
+            if (heading && heading.id) {
                 this.observer.observe(heading);
             }
         });
@@ -474,7 +499,6 @@ class ScrollToTopManager {
 class ShareManager {
     constructor() {
         this.button = document.getElementById('shareBtn');
-        this.toast = new ToastManager();
         this.setupClickHandler();
     }
 
@@ -504,9 +528,13 @@ class ShareManager {
     async fallbackShare(url) {
         try {
             await navigator.clipboard.writeText(url);
-            this.toast.success('Link copied to clipboard!');
+            if (window.toast) {
+                window.toast.success('Link copied to clipboard!');
+            }
         } catch (error) {
-            this.toast.error('Could not copy link');
+            if (window.toast) {
+                window.toast.error('Could not copy link');
+            }
         }
     }
 }
@@ -531,9 +559,8 @@ class TextSizeController {
         this.increaseBtn = document.getElementById('textSizeIncrease');
         this.decreaseBtn = document.getElementById('textSizeDecrease');
         this.resetBtn = document.getElementById('textSizeReset');
-        this.contentArea = document.querySelector('.content-area');
+        this.contentArea = null;
         this.setupClickHandlers();
-        this.applySavedSize();
     }
 
     setupClickHandlers() {
@@ -551,34 +578,44 @@ class TextSizeController {
     }
 
     applySavedSize() {
-        if (this.contentArea) {
+        this.contentArea = document.querySelector('.content-area');
+        if (this.contentArea && window.textSize) {
             const size = window.textSize.getCurrentSize();
             this.contentArea.style.fontSize = `${size}px`;
         }
     }
 
     increase() {
-        const newSize = window.textSize.increase();
-        if (this.contentArea) {
+        this.contentArea = document.querySelector('.content-area');
+        if (this.contentArea && window.textSize) {
+            const newSize = window.textSize.increase();
             this.contentArea.style.fontSize = `${newSize}px`;
+            if (window.toast) {
+                window.toast.info(`Text size: ${newSize}px`, 1000);
+            }
         }
-        window.toast.info(`Text size: ${newSize}px`, 1000);
     }
 
     decrease() {
-        const newSize = window.textSize.decrease();
-        if (this.contentArea) {
+        this.contentArea = document.querySelector('.content-area');
+        if (this.contentArea && window.textSize) {
+            const newSize = window.textSize.decrease();
             this.contentArea.style.fontSize = `${newSize}px`;
+            if (window.toast) {
+                window.toast.info(`Text size: ${newSize}px`, 1000);
+            }
         }
-        window.toast.info(`Text size: ${newSize}px`, 1000);
     }
 
     reset() {
-        const newSize = window.textSize.reset();
-        if (this.contentArea) {
+        this.contentArea = document.querySelector('.content-area');
+        if (this.contentArea && window.textSize) {
+            const newSize = window.textSize.reset();
             this.contentArea.style.fontSize = `${newSize}px`;
+            if (window.toast) {
+                window.toast.info(`Text size reset`, 1000);
+            }
         }
-        window.toast.info(`Text size reset`, 1000);
     }
 }
 
