@@ -13,16 +13,15 @@
       "coverImage": ""
     },
     {
-      "title": "Example Post",
-      "slug": "example-post",
-      "description": "This is an example blog post to demonstrate the structure",
-      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/example.md",
-      "date": "2025-01-10",
+      "title": "Complete Feature Demo",
+      "slug": "feature-demo",
+      "description": "Comprehensive demonstration of all blog features",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/feature-demo.md",
+      "date": "2025-01-16",
       "author": "bthavanish",
-      "tags": ["Example", "Tutorial"],
+      "tags": ["Example", "Features", "Tutorial"],
       "featured": false,
-      "readTime": 5,
-      "coverImage": ""
+      "readTime": 7
     }
   ],
   "categories": [
