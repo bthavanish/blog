@@ -1,19 +1,18 @@
-/* Claude AI Inspired Theme Variables */
 :root {
-    /* Colors - Light Mode */
+    /* Colors - Light Mode - Optimized */
     --primary: #cd7c53;
     --primary-hover: #b36a44;
-    --primary-light: #f4ede8;
+    --primary-light: #fdf6f2;
     --bg: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    --bg-hover: #f5f5f5;
-    --text: #1f2937;
-    --text-secondary: #6b7280;
-    --text-tertiary: #9ca3af;
-    --border: #e5e7eb;
-    --shadow: rgba(0, 0, 0, 0.05);
-    --shadow-lg: rgba(0, 0, 0, 0.1);
+    --bg-secondary: #fafafa;
+    --bg-tertiary: #f5f5f5;
+    --bg-hover: #f0f0f0;
+    --text: #0f0f0f;
+    --text-secondary: #525252;
+    --text-tertiary: #737373;
+    --border: #e5e5e5;
+    --shadow: rgba(0, 0, 0, 0.04);
+    --shadow-lg: rgba(0, 0, 0, 0.08);
     
     /* Spacing */
     --space-1: 0.25rem;
