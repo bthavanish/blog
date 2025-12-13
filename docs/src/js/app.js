@@ -93,6 +93,9 @@ class BlogApp {
                 siteTitle.textContent = site?.title || 'Blog';
             }
 
+            // Apply logo icon
+            this.applyLogoIcon();
+
             // Hero section
             const heroTitle = document.getElementById('heroTitle');
             const heroSubtitle = document.getElementById('heroSubtitle');
@@ -128,6 +131,16 @@ class BlogApp {
 
         // Render posts grid
         this.renderPostsGrid();
+    }
+
+    // Apply logo icon from config
+    applyLogoIcon() {
+        const logoIcon = document.getElementById('logoIcon');
+        const logoIconName = this.config?.ui?.header?.logoIcon || 'layers';
+        
+        if (logoIcon && this.config?.icons && this.config.icons[logoIconName]) {
+            logoIcon.innerHTML = this.config.icons[logoIconName];
+        }
     }
 
     // Setup UI components
