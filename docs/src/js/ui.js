@@ -1,4 +1,4 @@
-// UI Components Manager
+// Fixed UI Components Manager
 
 // Toast Notification System
 class ToastManager {
@@ -35,14 +35,11 @@ class ToastManager {
 
         this.container.appendChild(toast);
 
-        // Show animation
         setTimeout(() => toast.classList.add('show'), 10);
 
-        // Close button
         const closeBtn = toast.querySelector('.toast-close');
         closeBtn.addEventListener('click', () => this.hide(toast));
 
-        // Auto hide
         if (duration > 0) {
             setTimeout(() => this.hide(toast), duration);
         }
@@ -95,26 +92,18 @@ class SearchManager {
     }
 
     setupEventListeners() {
-        // Open search
         this.searchBtn.addEventListener('click', () => this.open());
-
-        // Close search
         this.closeBtn.addEventListener('click', () => this.close());
         this.overlay.addEventListener('click', (e) => {
             if (e.target === this.overlay) this.close();
         });
-
-        // Search input
         this.input.addEventListener('input', (e) => this.search(e.target.value));
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K to open search
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 this.open();
             }
-            // Escape to close
             if (e.key === 'Escape') {
                 this.close();
             }
@@ -179,7 +168,6 @@ class SearchManager {
             </div>
         `).join('');
 
-        // Add click handlers
         this.results.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', () => {
                 const slug = item.dataset.slug;
@@ -201,18 +189,21 @@ class MobileTOCManager {
     constructor() {
         this.overlay = document.getElementById('tocOverlay');
         this.panel = document.getElementById('tocPanel');
+        this.openBtn = document.getElementById('mobileTocBtn');
         this.closeBtn = document.getElementById('tocClose');
         this.mobileNav = document.getElementById('tocMobileNav');
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        // Close button
+        if (this.openBtn) {
+            this.openBtn.addEventListener('click', () => this.open());
+        }
+        
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.close());
         }
 
-        // Overlay click
         if (this.overlay) {
             this.overlay.addEventListener('click', () => this.close());
         }
@@ -239,6 +230,18 @@ class MobileTOCManager {
             this.mobileNav.innerHTML = tocHTML;
         }
     }
+
+    show() {
+        if (this.openBtn) {
+            this.openBtn.style.display = 'flex';
+        }
+    }
+
+    hide() {
+        if (this.openBtn) {
+            this.openBtn.style.display = 'none';
+        }
+    }
 }
 
 // Table of Contents Manager
@@ -255,15 +258,17 @@ class TOCManager {
         
         if (this.headings.length === 0) {
             if (this.sidebar) this.sidebar.style.display = 'none';
+            if (window.mobileTOC) window.mobileTOC.hide();
             return;
         }
 
         if (this.sidebar) this.sidebar.style.display = 'block';
+        if (window.mobileTOC) window.mobileTOC.show();
         
         const tocHTML = this.createTOCHTML();
         
         if (this.desktopNav) this.desktopNav.innerHTML = tocHTML;
-        if (this.mobileNav) this.mobileNav.innerHTML = tocHTML;
+        if (window.mobileTOC) window.mobileTOC.update(tocHTML);
         
         this.setupActiveTracking();
         this.setupClickHandlers();
@@ -294,7 +299,6 @@ class TOCManager {
                 const target = document.getElementById(targetId);
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Close mobile TOC if open
                     if (window.mobileTOC) {
                         window.mobileTOC.close();
                     }
@@ -320,6 +324,13 @@ class TOCManager {
         });
 
         this.headings.forEach(heading => observer.observe(heading));
+    }
+
+    clear() {
+        if (this.desktopNav) this.desktopNav.innerHTML = '';
+        if (this.mobileNav) this.mobileNav.innerHTML = '';
+        if (this.sidebar) this.sidebar.style.display = 'none';
+        if (window.mobileTOC) window.mobileTOC.hide();
     }
 
     escapeHtml(text) {
@@ -351,7 +362,7 @@ class ReadingProgressManager {
     }
 
     update() {
-        if (!this.bar) return;
+        if (!this.bar || this.bar.style.display === 'none') return;
         
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
@@ -362,11 +373,16 @@ class ReadingProgressManager {
     }
 
     show() {
-        if (this.bar) this.bar.style.display = 'block';
+        if (this.bar) {
+            this.bar.style.display = 'block';
+            this.update();
+        }
     }
 
     hide() {
-        if (this.bar) this.bar.style.display = 'none';
+        if (this.bar) {
+            this.bar.style.display = 'none';
+        }
     }
 }
 
