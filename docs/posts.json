@@ -1,0 +1,35 @@
+{
+  "posts": [
+    {
+      "title": "Consciousness Theory",
+      "slug": "consciousness-theory",
+      "description": "A theory about consciousness, self-models, and the future of AI",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/consciousness-theory.md",
+      "date": "2025-01-15",
+      "author": "bthavanish",
+      "tags": ["AI", "Philosophy", "Consciousness"],
+      "featured": true,
+      "readTime": 15,
+      "coverImage": ""
+    },
+    {
+      "title": "Example Post",
+      "slug": "example-post",
+      "description": "This is an example blog post to demonstrate the structure",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/example.md",
+      "date": "2025-01-10",
+      "author": "bthavanish",
+      "tags": ["Example", "Tutorial"],
+      "featured": false,
+      "readTime": 5,
+      "coverImage": ""
+    }
+  ],
+  "categories": [
+    "AI",
+    "Philosophy",
+    "Technology",
+    "Tutorial",
+    "Personal"
+  ]
+}
