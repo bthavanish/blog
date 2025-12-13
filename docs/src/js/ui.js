@@ -1,5 +1,3 @@
-// Fixed UI Components Manager
-
 // Toast Notification System
 class ToastManager {
     constructor() {
@@ -488,15 +486,25 @@ class PrintManager {
 // Text Size Controller
 class TextSizeController {
     constructor() {
-        this.button = document.getElementById('textSizeBtn');
+        this.increaseBtn = document.getElementById('textSizeIncrease');
+        this.decreaseBtn = document.getElementById('textSizeDecrease');
+        this.resetBtn = document.getElementById('textSizeReset');
         this.contentArea = document.querySelector('.content-area');
-        this.setupClickHandler();
+        this.setupClickHandlers();
         this.applySavedSize();
     }
 
-    setupClickHandler() {
-        if (this.button) {
-            this.button.addEventListener('click', () => this.cycle());
+    setupClickHandlers() {
+        if (this.increaseBtn) {
+            this.increaseBtn.addEventListener('click', () => this.increase());
+        }
+        
+        if (this.decreaseBtn) {
+            this.decreaseBtn.addEventListener('click', () => this.decrease());
+        }
+        
+        if (this.resetBtn) {
+            this.resetBtn.addEventListener('click', () => this.reset());
         }
     }
 
@@ -507,20 +515,28 @@ class TextSizeController {
         }
     }
 
-    cycle() {
-        const currentIndex = window.textSize.getCurrentIndex();
-        const sizes = window.textSize.sizes;
-        
-        let newSize;
-        if (currentIndex >= sizes.length - 1) {
-            newSize = window.textSize.reset();
-        } else {
-            newSize = window.textSize.increase();
-        }
-        
+    increase() {
+        const newSize = window.textSize.increase();
         if (this.contentArea) {
             this.contentArea.style.fontSize = `${newSize}px`;
         }
+        window.toast.info(`Text size: ${newSize}px`, 1000);
+    }
+
+    decrease() {
+        const newSize = window.textSize.decrease();
+        if (this.contentArea) {
+            this.contentArea.style.fontSize = `${newSize}px`;
+        }
+        window.toast.info(`Text size: ${newSize}px`, 1000);
+    }
+
+    reset() {
+        const newSize = window.textSize.reset();
+        if (this.contentArea) {
+            this.contentArea.style.fontSize = `${newSize}px`;
+        }
+        window.toast.info(`Text size reset`, 1000);
     }
 }
 
