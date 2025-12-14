@@ -50,6 +50,14 @@
       "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/blog/content/consciousness-theory.md",
       "date": "2025-01-15",
       "tags": ["AI", "Philosophy", "Consciousness"]
+    },
+    {
+      "title": "example",
+      "slug": "example",
+      "description": "example",
+      "url": "https://raw.githubusercontent.com/bthavanish/blog/refs/heads/test/content/example.md",
+      "date": "2025-01-15",
+      "tags": ["he", "he", "he"]
     }
   ]
 }
