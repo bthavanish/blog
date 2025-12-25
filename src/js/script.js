@@ -1,7 +1,11 @@
-// === CONFIGURATION ===
+// CONFIG STUFF
+// where the config lives, duh
 const CONFIG_URL = './config.json';
 
-// === COMMENTS MANAGER ===
+
+// COMMENTS MANAGER
+// handles comments - supports giscus, utterances, and disqus
+// honestly giscus is the best one imo
 class CommentsManager {
     constructor() {
         this.commentsSection = document.getElementById('commentsSection');
@@ -13,18 +17,22 @@ class CommentsManager {
         this.config = config;
     }
 
+    // load comments for a specific post
     async load(documentSlug) {
+        // if comments are disabled just hide the whole thing
         if (!this.config || !this.config.comments || !this.config.comments.enabled) {
             this.commentsSection.style.display = 'none';
             return;
         }
 
+        // show loading spinner while we load
         this.commentsSection.style.display = 'block';
         this.commentsContainer.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>Loading comments...</p></div>';
 
         const provider = this.config.comments.provider;
 
         try {
+            // figure out which comment system we're using
             if (provider === 'giscus') {
                 await this.loadGiscus(documentSlug);
             } else if (provider === 'utterances') {
@@ -38,6 +46,7 @@ class CommentsManager {
         }
     }
 
+    // load giscus comments (github discussions based)
     async loadGiscus(documentSlug) {
         const settings = this.config.comments.giscus;
         if (!settings || !settings.repo) {
@@ -45,10 +54,10 @@ class CommentsManager {
             return;
         }
 
-        // Clear container
         this.commentsContainer.innerHTML = '';
 
-        // Create script
+        // create the giscus script with all its settings
+        // there's a LOT of attributes here lol
         const script = document.createElement('script');
         script.src = 'https://giscus.app/client.js';
         script.setAttribute('data-repo', settings.repo);
@@ -68,10 +77,11 @@ class CommentsManager {
 
         this.commentsContainer.appendChild(script);
 
-        // Listen for theme changes
+        // watch for theme changes so comments match
         this.setupThemeListener();
     }
 
+    // load utterances comments (github issues based)
     async loadUtterances(documentSlug) {
         const settings = this.config.comments.utterances;
         if (!settings || !settings.repo) {
@@ -94,6 +104,7 @@ class CommentsManager {
         this.setupThemeListener();
     }
 
+    // load disqus comments (the old reliable)
     async loadDisqus(documentSlug) {
         const settings = this.config.comments.disqus;
         if (!settings || !settings.shortname) {
@@ -103,6 +114,7 @@ class CommentsManager {
 
         this.commentsContainer.innerHTML = '<div id="disqus_thread"></div>';
 
+        // disqus needs this global config function
         window.disqus_config = function () {
             this.page.url = window.location.href;
             this.page.identifier = documentSlug;
@@ -114,18 +126,21 @@ class CommentsManager {
         (document.head || document.body).appendChild(script);
     }
 
+    // get the right giscus theme based on dark mode
     getGiscusTheme() {
         const isDark = document.documentElement.classList.contains('dark');
         const settings = this.config.comments.giscus;
         return isDark ? (settings.darkTheme || 'dark') : (settings.lightTheme || 'light');
     }
 
+    // get the right utterances theme based on dark mode
     getUtterancesTheme() {
         const isDark = document.documentElement.classList.contains('dark');
         const settings = this.config.comments.utterances;
         return isDark ? (settings.darkTheme || 'github-dark') : (settings.lightTheme || 'github-light');
     }
 
+    // watch for theme changes
     setupThemeListener() {
         const observer = new MutationObserver(() => {
             this.updateTheme();
@@ -137,6 +152,7 @@ class CommentsManager {
         });
     }
 
+    // update comment theme when site theme changes
     updateTheme() {
         const provider = this.config?.comments?.provider;
         
@@ -144,6 +160,7 @@ class CommentsManager {
             const iframe = document.querySelector('iframe.giscus-frame');
             if (iframe) {
                 const theme = this.getGiscusTheme();
+                // send message to giscus iframe to change theme
                 iframe.contentWindow.postMessage(
                     { giscus: { setConfig: { theme } } },
                     'https://giscus.app'
@@ -153,6 +170,7 @@ class CommentsManager {
             const iframe = document.querySelector('.utterances-frame');
             if (iframe) {
                 const theme = this.getUtterancesTheme();
+                // send message to utterances iframe
                 iframe.contentWindow.postMessage(
                     { type: 'set-theme', theme },
                     'https://utteranc.es'
@@ -161,6 +179,7 @@ class CommentsManager {
         }
     }
 
+    // show error message when comments fail to load
     showError(message = 'Unable to load comments') {
         this.commentsContainer.innerHTML = `
             <div class="error-state">
@@ -174,17 +193,22 @@ class CommentsManager {
     }
 }
 
+// create global instance
 const commentsManager = new CommentsManager();
 
-// === STATE MANAGEMENT ===
+// ========================================
+// APP STATE
+// ========================================
+// keeps track of what's currently being shown
 class AppState {
     constructor() {
         this.config = null;
         this.currentDocument = null;
-        this.view = 'home';
+        this.view = 'home'; // can be 'home', 'document', or '404'
         this.documents = [];
     }
 
+    // load the config file
     async loadConfig() {
         try {
             const response = await fetch(CONFIG_URL);
@@ -201,34 +225,40 @@ class AppState {
         }
     }
 
+    // apply custom theme colors from config
     applyThemeColors() {
         if (this.config.theme) {
             const root = document.documentElement;
             const theme = this.config.theme;
             
+            // set CSS variables for accent colors
             if (theme.accent) root.style.setProperty('--accent', theme.accent);
             if (theme.accentHover) root.style.setProperty('--accent-hover', theme.accentHover);
             if (theme.accentLight) root.style.setProperty('--accent-light', theme.accentLight);
         }
     }
 
+    // switch to document view
     setDocument(doc) {
         this.currentDocument = doc;
         this.view = 'document';
         this.updateUI();
     }
 
+    // switch to home view
     setHome() {
         this.currentDocument = null;
         this.view = 'home';
         this.updateUI();
     }
 
+    // show 404 page
     show404() {
         this.view = '404';
         this.updateUI();
     }
 
+    // update what's visible based on current view
     updateUI() {
         const homeScreen = document.getElementById('homeScreen');
         const documentView = document.getElementById('documentView');
@@ -238,10 +268,12 @@ class AppState {
         const shareBtn = document.getElementById('shareBtn');
         const footer = document.getElementById('siteFooter');
         
+        // hide everything first
         homeScreen.style.display = 'none';
         documentView.classList.remove('active');
         error404.style.display = 'none';
         
+        // show the right stuff for current view
         if (this.view === 'home') {
             homeScreen.style.display = 'block';
             tocToggle.style.display = 'none';
@@ -266,6 +298,7 @@ class AppState {
         }
     }
 
+    // show error page if config fails to load
     showConfigError() {
         document.body.innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center;">
@@ -279,16 +312,22 @@ class AppState {
     }
 }
 
+// global app state
 const appState = new AppState();
 
-// === ROUTER ===
+// ========================================
+// ROUTER
+// ========================================
+// handles URL navigation and routing
+// this was a bitch to get working with github pages
 class Router {
     constructor() {
         this.routes = {};
     }
 
     init() {
-        // Wait a tick to ensure index.html redirect script runs first
+        // wait a tick for the redirect script in index.html to run first
+        // otherwise we get weird race conditions
         setTimeout(() => {
             window.addEventListener('popstate', () => this.handleRoute());
             this.handleRoute();
@@ -299,39 +338,24 @@ class Router {
         this.routes[path] = handler;
     }
 
+    // navigate to a new path
     navigate(path) {
         history.pushState(null, '', path);
         this.handleRoute();
     }
 
+    // figure out what to show based on current URL
     handleRoute() {
-        // Visual debug info
-        /*const debugInfo = document.createElement('div');
-        debugInfo.style.cssText = 'position: fixed; top: 10px; right: 10px; background: black; color: lime; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
-        debugInfo.innerHTML = `
-            <div>URL: ${window.location.href}</div>
-            <div>Pathname: ${window.location.pathname}</div>
-            <div>Search: ${window.location.search}</div>
-        `
-        document.body.appendChild(debugInfo);
-        setTimeout(() => debugInfo.remove(), 5000);
-        */
-        // Check if we have redirect params from 404
+        // check if we have redirect params from 404.html
+        // github pages doesn't do SPAs natively so we have to hack it
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('p')) {
             const path = urlParams.get('p');
             const query = urlParams.get('q');
             const newUrl = '/blog' + path + (query ? '?' + query.replace(/~and~/g, '&') : '');
             
-            // Show redirect happening
-            const redirectInfo = document.createElement('div');
-            redirectInfo.style.cssText = 'position: fixed; top: 50px; right: 10px; background: blue; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
-            redirectInfo.innerHTML = `Redirecting to: ${newUrl}`;
-            document.body.appendChild(redirectInfo);
-            setTimeout(() => redirectInfo.remove(), 5000);
-            
             window.history.replaceState(null, '', newUrl);
-            // Recursively call handleRoute with the corrected URL
+            // recursively call to handle the corrected URL
             this.handleRoute();
             return;
         }
@@ -339,18 +363,20 @@ class Router {
         const path = window.location.pathname;
         const basePath = '/blog';
         
-        // Remove base path for GitHub Pages
+        // remove base path for github pages
         let route = path.replace(basePath, '') || '/';
         if (route !== '/' && route.endsWith('/')) {
             route = route.slice(0, -1);
         }
 
-        // Remove query parameters from route matching
+        // strip query params for matching
         const cleanRoute = route.split('?')[0];
 
         if (cleanRoute === '/' || cleanRoute === '') {
+            // show home page
             appState.setHome();
         } else {
+            // try to find document by slug
             const slug = cleanRoute.substring(1);
             const doc = appState.documents.find(d => d.slug === slug);
             
@@ -358,16 +384,7 @@ class Router {
                 appState.setDocument(doc);
                 new DocumentLoader().load(doc.url);
             } else {
-                // Show why 404
-                const notFoundInfo = document.createElement('div');
-                notFoundInfo.style.cssText = 'position: fixed; top: 90px; right: 10px; background: red; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
-                notFoundInfo.innerHTML = `
-                    <div>404: Slug '${slug}' not found</div>
-                    <div>Available docs: ${appState.documents.map(d => d.slug).join(', ')}</div>
-                `;
-                document.body.appendChild(notFoundInfo);
-                setTimeout(() => notFoundInfo.remove(), 10000);
-                
+                // document not found, show 404
                 appState.show404();
             }
         }
@@ -380,7 +397,10 @@ class Router {
 
 const router = new Router();
 
-// === THEME MANAGER ===
+// ========================================
+// THEME MANAGER
+// ========================================
+// handles light/dark mode switching
 class ThemeManager {
     constructor() {
         this.html = document.documentElement;
@@ -396,10 +416,12 @@ class ThemeManager {
         this.toggleBtn.addEventListener('click', () => this.toggle());
     }
 
+    // get theme from localStorage or default to light
     getSavedTheme() {
         return localStorage.getItem('theme') || 'light';
     }
 
+    // apply theme and switch icons
     applyTheme(theme) {
         const isDark = theme === 'dark';
         this.html.classList.toggle('dark', isDark);
@@ -407,6 +429,7 @@ class ThemeManager {
         this.moonIcon.classList.toggle('icon-hidden', !isDark);
     }
 
+    // toggle between light and dark
     toggle() {
         const isDark = this.html.classList.contains('dark');
         const newTheme = isDark ? 'light' : 'dark';
@@ -415,7 +438,10 @@ class ThemeManager {
     }
 }
 
-// === SEARCH MANAGER ===
+// ========================================
+// SEARCH MANAGER
+// ========================================
+// handles the search modal and searching through posts
 class SearchManager {
     constructor() {
         this.searchBtn = document.getElementById('searchBtn');
@@ -435,12 +461,14 @@ class SearchManager {
         
         this.searchInput.addEventListener('input', (e) => this.search(e.target.value));
         
-        // Keyboard shortcuts
+        // keyboard shortcuts
         document.addEventListener('keydown', (e) => {
+            // ctrl/cmd + k to open search
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 this.open();
             }
+            // escape to close
             if (e.key === 'Escape') {
                 this.close();
             }
@@ -450,7 +478,7 @@ class SearchManager {
     open() {
         this.searchOverlay.classList.add('active');
         this.searchInput.focus();
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden'; // prevent scrolling behind modal
     }
 
     close() {
@@ -460,12 +488,14 @@ class SearchManager {
         document.body.style.overflow = '';
     }
 
+    // search through documents
     search(query) {
         if (!query.trim()) {
             this.searchResults.innerHTML = '';
             return;
         }
 
+        // filter docs by title, description, and tags
         const results = appState.documents.filter(doc => {
             const searchText = `${doc.title} ${doc.description} ${doc.tags?.join(' ') || ''}`.toLowerCase();
             return searchText.includes(query.toLowerCase());
@@ -476,6 +506,7 @@ class SearchManager {
             return;
         }
 
+        // render results
         this.searchResults.innerHTML = results.map(doc => `
             <div class="search-result-item" data-slug="${doc.slug}">
                 <div class="search-result-title">${doc.title}</div>
@@ -483,6 +514,7 @@ class SearchManager {
             </div>
         `).join('');
 
+        // add click handlers to results
         this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', () => {
                 const slug = item.dataset.slug;
@@ -493,7 +525,10 @@ class SearchManager {
     }
 }
 
-// === SHARE MANAGER ===
+// ========================================
+// SHARE MANAGER
+// ========================================
+// handles sharing posts (web share API or clipboard fallback)
 class ShareManager {
     constructor() {
         this.shareBtn = document.getElementById('shareBtn');
@@ -508,19 +543,23 @@ class ShareManager {
         const title = appState.currentDocument?.title || 'Blog Post';
         const url = window.location.href;
 
+        // try to use native share if available (mobile mostly)
         if (navigator.share) {
             try {
                 await navigator.share({ title, url });
             } catch (error) {
+                // user probably just cancelled
                 if (error.name !== 'AbortError') {
                     this.fallbackShare(url);
                 }
             }
         } else {
+            // fallback to copying link
             this.fallbackShare(url);
         }
     }
 
+    // copy link to clipboard
     fallbackShare(url) {
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('Link copied to clipboard!');
@@ -529,6 +568,7 @@ class ShareManager {
         });
     }
 
+    // show toast notification
     showToast(message) {
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -548,12 +588,15 @@ class ShareManager {
     }
 }
 
-// === TEXT SIZE CONTROL ===
+// ========================================
+// TEXT SIZE CONTROL
+// ========================================
+// lets users adjust font size
 class TextSizeControl {
     constructor() {
         this.contentEl = document.getElementById('content');
-        this.sizes = [14, 16, 18, 20];
-        this.currentIndex = 1;
+        this.sizes = [14, 16, 18, 20]; // available font sizes
+        this.currentIndex = 1; // default to 16px
         
         document.getElementById('decreaseText').addEventListener('click', () => this.decrease());
         document.getElementById('increaseText').addEventListener('click', () => this.increase());
@@ -588,7 +631,7 @@ class TextSizeControl {
     }
 
     reset() {
-        this.currentIndex = 1;
+        this.currentIndex = 1; // back to 16px
         this.apply();
     }
 
@@ -599,7 +642,10 @@ class TextSizeControl {
     }
 }
 
-// === TABLE OF CONTENTS ===
+// ========================================
+// TABLE OF CONTENTS
+// ========================================
+// generates TOC from headings and tracks active section
 class TableOfContents {
     constructor() {
         this.desktopContainer = document.getElementById('tocDesktopContent');
@@ -630,10 +676,12 @@ class TableOfContents {
         document.body.style.overflow = '';
     }
 
+    // generate TOC from h2 and h3 headings
     generate() {
         const contentEl = document.getElementById('content');
         this.headings = Array.from(contentEl.querySelectorAll('h2, h3'));
         
+        // if no headings, hide TOC
         if (this.headings.length === 0) {
             document.getElementById('tocSidebar').style.display = 'none';
             return;
@@ -642,6 +690,7 @@ class TableOfContents {
         document.getElementById('tocSidebar').style.display = 'block';
         const list = this.createTOCList();
         
+        // add to both desktop and mobile containers
         this.desktopContainer.innerHTML = '';
         this.mobileContainer.innerHTML = '';
         this.desktopContainer.appendChild(list.cloneNode(true));
@@ -651,11 +700,13 @@ class TableOfContents {
         this.initClickHandlers();
     }
 
+    // create the actual TOC list
     createTOCList() {
         const list = document.createElement('ul');
         list.className = 'toc-list';
         
         this.headings.forEach((heading, index) => {
+            // make sure heading has an id
             const id = heading.id || `heading-${index}`;
             heading.id = id;
             
@@ -673,6 +724,7 @@ class TableOfContents {
         return list;
     }
 
+    // make TOC links clickable
     initClickHandlers() {
         const links = document.querySelectorAll('.toc-list a');
         links.forEach(link => {
@@ -683,6 +735,7 @@ class TableOfContents {
                 const target = document.getElementById(targetId);
                 if (target) {
                     this.closeMobile();
+                    // wait a bit before scrolling on mobile
                     setTimeout(() => {
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 100);
@@ -691,13 +744,17 @@ class TableOfContents {
         });
     }
 
+    // track which section is currently visible
     initActiveTracking() {
         const links = document.querySelectorAll('.toc-list a');
         
+        // use intersection observer to detect visible headings
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
+                    // remove active from all links
                     links.forEach(link => link.classList.remove('active'));
+                    // add active to current section
                     const activeLinks = document.querySelectorAll(`a[data-id="${entry.target.id}"]`);
                     activeLinks.forEach(link => link.classList.add('active'));
                 }
@@ -711,7 +768,10 @@ class TableOfContents {
     }
 }
 
-// === READING PROGRESS ===
+// ========================================
+// READING PROGRESS
+// ========================================
+// shows progress bar at top while reading
 class ReadingProgress {
     constructor() {
         this.bar = document.getElementById('readingProgress');
@@ -723,6 +783,7 @@ class ReadingProgress {
         this.update();
     }
 
+    // calculate and update progress
     update() {
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
@@ -733,7 +794,10 @@ class ReadingProgress {
     }
 }
 
-// === SCROLL TO TOP ===
+// ========================================
+// SCROLL TO TOP BUTTON
+// ========================================
+// shows button to scroll back to top
 class ScrollToTop {
     constructor() {
         this.btn = document.getElementById('scrollTop');
@@ -745,6 +809,7 @@ class ScrollToTop {
         this.btn.addEventListener('click', () => this.scrollToTop());
     }
 
+    // show/hide button based on scroll position
     toggle() {
         if (window.pageYOffset > 300) {
             this.btn.classList.add('visible');
@@ -758,18 +823,23 @@ class ScrollToTop {
     }
 }
 
-// === READING TIME ESTIMATOR ===
+// ========================================
+// READING TIME ESTIMATOR
+// ========================================
+// calculates estimated reading time
 class ReadingTime {
     constructor() {
-        this.wordsPerMinute = 200;
+        this.wordsPerMinute = 200; // average reading speed
     }
 
+    // count words and calculate time
     calculate(text) {
         const words = text.trim().split(/\s+/).length;
         const minutes = Math.ceil(words / this.wordsPerMinute);
         return minutes;
     }
 
+    // show reading time below title
     display(minutes) {
         const contentEl = document.getElementById('content');
         const firstHeading = contentEl.querySelector('h1, h2');
@@ -788,7 +858,10 @@ class ReadingTime {
     }
 }
 
-// === PRINT MANAGER ===
+// ========================================
+// PRINT MANAGER
+// ========================================
+// handles printing
 class PrintManager {
     constructor() {
         document.getElementById('printBtn').addEventListener('click', () => this.print());
@@ -799,14 +872,19 @@ class PrintManager {
     }
 }
 
-// === DOCUMENT LOADER ===
+// ========================================
+// DOCUMENT LOADER
+// ========================================
+// loads and renders markdown documents
 class DocumentLoader {
     constructor() {
         this.contentEl = document.getElementById('content');
     }
 
+    // fetch and render a markdown file
     async load(url) {
         try {
+            // show loading state
             this.contentEl.className = 'loading-state';
             this.contentEl.innerHTML = '<div class="loading-spinner"></div><p>Hang tight, loading your content...</p>';
             
@@ -824,12 +902,13 @@ class DocumentLoader {
         }
     }
 
+    // convert markdown to HTML
     render(markdown) {
         marked.setOptions({
             headerIds: true,
             mangle: false,
             breaks: false,
-            gfm: true
+            gfm: true // github flavored markdown
         });
 
         const html = marked.parse(markdown);
@@ -837,6 +916,7 @@ class DocumentLoader {
         this.contentEl.classList.remove('loading-state');
     }
 
+    // add TOC, reading time, comments after rendering
     initEnhancements(markdown) {
         const toc = new TableOfContents();
         toc.generate();
@@ -845,14 +925,16 @@ class DocumentLoader {
         const minutes = readingTime.calculate(markdown);
         readingTime.display(minutes);
 
-        // Load comments if enabled
+        // load comments if article has them enabled
         if (appState.currentDocument) {
             commentsManager.load(appState.currentDocument.slug);
         }
 
+        // scroll to top when new doc loads
         window.scrollTo({ top: 0 });
     }
 
+    // show error if doc fails to load
     showError(error) {
         console.error('Failed to load content:', error);
         this.contentEl.className = 'error-state';
@@ -863,7 +945,10 @@ class DocumentLoader {
     }
 }
 
-// === HOME SCREEN MANAGER ===
+// ========================================
+// HOME SCREEN MANAGER
+// ========================================
+// manages the home page with all the article cards
 class HomeScreenManager {
     constructor() {
         this.gridEl = document.getElementById('documentGrid');
@@ -874,6 +959,7 @@ class HomeScreenManager {
         this.renderDocuments();
     }
 
+    // render all document cards
     renderDocuments() {
         this.gridEl.innerHTML = '';
         
@@ -881,6 +967,7 @@ class HomeScreenManager {
             const card = document.createElement('div');
             card.className = 'document-card';
             
+            // add tags if they exist
             const tagsHTML = doc.tags ? `
                 <div class="document-meta">
                     <div class="document-tags">
@@ -889,12 +976,14 @@ class HomeScreenManager {
                 </div>
             ` : '';
             
+            // add date if it exists
             const dateHTML = doc.date ? `
                 <div class="document-meta">
                     <div class="document-date">${new Date(doc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                 </div>
             ` : '';
             
+            // build the card HTML
             card.innerHTML = `
                 <div class="document-icon">
                     <svg viewBox="0 0 24 24">
@@ -907,54 +996,49 @@ class HomeScreenManager {
                 ${tagsHTML}
             `;
             
+            // make card clickable
             card.addEventListener('click', () => this.openDocument(doc));
             this.gridEl.appendChild(card);
         });
     }
 
+    // navigate to document
     openDocument(doc) {
         router.navigate(`${router.getBasePath()}/${doc.slug}`);
     }
 }
 
-// === INITIALIZATION ===
+// ========================================
+// INITIALIZATION
+// ========================================
+// this runs when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
-    // Add immediate visual feedback that script is running
-    /*const loadingDebug = document.createElement('div');
-    loadingDebug.style.cssText = 'position: fixed; top: 10px; right: 10px; background: green; color: white; padding: 10px; font-family: monospace; font-size: 12px; z-index: 10000;';
-    loadingDebug.textContent = 'Script loading...';
-    document.body.appendChild(loadingDebug);*/
     
-    // Load configuration first
+    // load config first - everything depends on this
     const configLoaded = await appState.loadConfig();
     if (!configLoaded) {
-       /* loadingDebug.style.background = 'red';
-        loadingDebug.textContent = 'Config failed to load!';*/
-        return;
+        return; // config error page already shown
     }
     
- /*   loadingDebug.textContent = `Config loaded. Docs: ${appState.documents.length}`;
-    setTimeout(() => loadingDebug.remove(), 3000);*/
-    
-    // Update UI with config
+    // update UI text from config
     document.getElementById('siteTitle').textContent = appState.config.siteTitle || 'Blog';
     document.getElementById('heroTitle').textContent = appState.config.heroTitle || 'Welcome';
     document.getElementById('heroSubtitle').textContent = appState.config.heroSubtitle || 'Select a post to read';
     document.getElementById('footerText').innerHTML = appState.config.footer || '© 2025';
     
-    // Update page title
+    // update page title
     document.title = appState.config.siteTitle || 'Blog';
     
-    // Update meta description
+    // update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription && appState.config.siteDescription) {
         metaDescription.content = appState.config.siteDescription;
     }
     
-    // Initialize theme first
+    // initialize theme first so it's ready immediately
     new ThemeManager();
     
-    // Initialize utilities
+    // initialize all the utility classes
     new ReadingProgress();
     new ScrollToTop();
     new PrintManager();
@@ -962,14 +1046,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     new SearchManager();
     new ShareManager();
     
-    // Initialize home screen
+    // set up home screen with document cards
     const homeManager = new HomeScreenManager();
     homeManager.init();
     
-    // NOW initialize router after config is loaded
+    // initialize router AFTER config is loaded
+    // this handles URL routing and navigation
     router.init();
     
-    // Initialize navigation
+    // set up navigation handlers
     document.getElementById('siteTitle').addEventListener('click', () => {
         router.navigate(router.getBasePath() + '/');
     });
