@@ -5,24 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="bthavanish's personal blog">
     <title>bthavanish's blog</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./src/style.css">
     
-    <!-- GitHub Pages SPA support - MUST be before other scripts -->
     <script>
-        // Single Page Apps for GitHub Pages
-        // Decode the redirect from 404.html immediately
+        // OK so this is basically a hack for GitHub Pages to handle client-side routing
+        // GitHub Pages doesn't play nice with SPAs, so we have to do this redirect nonsense
+        // Basically converts /?p=/some/path back into /some/path
+        // Yeah it's annoying but it works ¯\_(ツ)_/¯
         (function(l) {
             if (l.search) {
                 var params = {};
+                // Split the query string and parse it into an object
                 l.search.slice(1).split('&').forEach(function(v) {
                     var pair = v.split('=');
-                    params[pair[0]] = pair.slice(1).join('='); // Handle = in values
+                    // Handle edge case where values might have = in them (annoying but possible)
+                    params[pair[0]] = pair.slice(1).join('=');
                 });
                 
+                // If we have a 'p' parameter, that's our actual path
                 if (params.p !== undefined) {
                     var path = decodeURIComponent(params.p);
                     var query = params.q ? decodeURIComponent(params.q) : '';
                     
+                    // Replace the URL without reloading the page - magic!
                     window.history.replaceState(null, null,
                         l.pathname.slice(0, -1) + path +
                         (query ? '?' + query : '') +
@@ -34,41 +39,58 @@
     </script>
 </head>
 <body>
+    <!-- Reading progress bar that shows up at the top when scrolling -->
     <div class="reading-progress" id="readingProgress"></div>
     
+    <!-- Main site header - pretty standard stuff -->
     <header class="site-header">
         <div class="header-container">
+            <!-- Title loads via JS because we're fancy like that -->
             <h1 class="site-title" id="siteTitle">Loading...</h1>
+            
             <div class="header-actions">
+                <!-- Search button - the SVG is just a magnifying glass icon -->
                 <button class="icon-btn search-btn" id="searchBtn" aria-label="Search" type="button">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                     </svg>
                 </button>
+                
+                <!-- Mobile TOC toggle - only shows on small screens -->
                 <button class="icon-btn toc-mobile-toggle" id="tocMobileToggle" aria-label="Toggle table of contents" type="button" style="display: none;">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
                     </svg>
                 </button>
+                
+                <!-- Print button - hidden by default, shows when viewing an article -->
                 <button class="icon-btn print-btn" id="printBtn" aria-label="Print document" type="button" style="display: none;">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
                     </svg>
                 </button>
+                
+                <!-- Share button - for that sweet social media engagement -->
                 <button class="icon-btn share-btn" id="shareBtn" aria-label="Share" type="button" style="display: none;">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
                     </svg>
                 </button>
+                
+                <!-- Text size controls - for people who actually use this stuff -->
                 <div class="text-controls">
                     <button class="text-size-btn" id="decreaseText" aria-label="Decrease text size" type="button">A−</button>
                     <button class="text-size-btn" id="resetText" aria-label="Reset text size" type="button">A</button>
                     <button class="text-size-btn" id="increaseText" aria-label="Increase text size" type="button">A+</button>
                 </div>
+                
+                <!-- Theme toggle - light/dark mode because we're not savages -->
                 <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button">
+                    <!-- Sun icon for light mode -->
                     <svg class="sun-icon" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
                     </svg>
+                    <!-- Moon icon for dark mode -->
                     <svg class="moon-icon icon-hidden" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
                     </svg>
@@ -77,25 +99,28 @@
         </div>
     </header>
 
-    <!-- Search Modal -->
+    <!-- Search Modal - pops up when you click the search button -->
     <div class="search-overlay" id="searchOverlay">
         <div class="search-modal">
             <div class="search-header">
+                <!-- Search input - duh -->
                 <input type="text" class="search-input" id="searchInput" placeholder="Search articles..." autocomplete="off">
+                <!-- Close button with X icon -->
                 <button class="search-close" id="searchClose" aria-label="Close search" type="button">
                     <svg viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
+            <!-- Search results get dumped here by JS -->
             <div class="search-results" id="searchResults"></div>
         </div>
     </div>
 
-    <!-- Mobile TOC Overlay -->
+    <!-- Mobile TOC stuff - because mobile navigation is its own special hell -->
     <div class="toc-mobile-overlay" id="tocMobileOverlay"></div>
     
-    <!-- Mobile TOC Panel -->
+    <!-- Sidebar panel that slides in on mobile -->
     <aside class="toc-mobile-panel" id="tocMobilePanel">
         <div class="toc-mobile-header">
             <h3 class="toc-title">Table of Contents</h3>
@@ -105,23 +130,27 @@
                 </svg>
             </button>
         </div>
+        <!-- TOC links go here -->
         <div class="toc-mobile-content" id="tocMobileContent"></div>
     </aside>
 
-    <!-- Home Screen -->
+    <!-- Home Screen - the main landing page with all the articles -->
     <div class="home-screen" id="homeScreen">
         <div class="home-container">
+            <!-- Hero section at the top -->
             <div class="home-hero">
                 <h1 id="heroTitle">Loading...</h1>
                 <p id="heroSubtitle">Loading...</p>
             </div>
+            <!-- Grid of article cards - populated by JS -->
             <div class="document-grid" id="documentGrid"></div>
         </div>
     </div>
 
-    <!-- Document View -->
+    <!-- Document View - shows when you open an article -->
     <div class="document-view" id="documentView">
         <div class="page-container">
+            <!-- Back button to go back to home -->
             <button class="back-button" id="backButton" type="button">
                 <svg viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
@@ -130,24 +159,27 @@
             </button>
             
             <div class="content-layout">
-                <!-- Desktop TOC Sidebar -->
+                <!-- Desktop TOC Sidebar - only visible on larger screens -->
                 <aside class="toc-sidebar" id="tocSidebar">
                     <div class="toc-header">
                         <h3 class="toc-title">Table of Contents</h3>
                     </div>
+                    <!-- TOC links for desktop -->
                     <nav id="tocDesktopContent"></nav>
                 </aside>
 
-                <!-- Main Content -->
+                <!-- Main Content Area -->
                 <div class="content-wrapper">
+                    <!-- Article content card -->
                     <article class="content-card">
+                        <!-- Loading state with spinner - gets replaced with actual content -->
                         <div id="content" class="loading-state">
                             <div class="loading-spinner"></div>
                             <p>Hang tight, loading your content...</p>
                         </div>
                     </article>
                     
-                    <!-- Comments Section -->
+                    <!-- Comments Section - hidden by default, shown if article has comments enabled -->
                     <div class="comments-card" id="commentsSection" style="display: none;">
                         <h2 class="comments-title">Comments</h2>
                         <div id="commentsContainer"></div>
@@ -157,9 +189,10 @@
         </div>
     </div>
 
-    <!-- 404 Page -->
+    <!-- 404 Page - shows when someone tries to access a non-existent article -->
     <div class="error-page" id="error404" style="display: none;">
         <div class="error-container">
+            <!-- Warning icon -->
             <div class="error-icon">
                 <svg viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
@@ -168,6 +201,7 @@
             <h1>404</h1>
             <h2>Page Not Found</h2>
             <p>The article you're looking for doesn't exist or may have been moved.</p>
+            <!-- Home button to get back to safety -->
             <button class="error-home-btn" id="errorHomeBtn">
                 <svg viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
@@ -177,20 +211,23 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer - simple footer at the bottom of the page -->
     <footer class="site-footer" id="siteFooter">
         <div class="footer-container">
             <p id="footerText">Loading...</p>
         </div>
     </footer>
 
+    <!-- Scroll to top button - appears when you scroll down -->
     <button class="scroll-top" id="scrollTop" aria-label="Scroll to top" type="button">
         <svg viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/>
         </svg>
     </button>
 
+    <!-- marked.js for parsing Markdown - because who wants to write HTML manually? -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-    <script src="script.js"></script>
+    <!-- Main JS file - where all the actual magic happens -->
+    <script src="./src/script.js"></script>
 </body>
 </html>
