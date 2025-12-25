@@ -196,9 +196,7 @@ class CommentsManager {
 // create global instance
 const commentsManager = new CommentsManager();
 
-// ========================================
 // APP STATE
-// ========================================
 // keeps track of what's currently being shown
 class AppState {
     constructor() {
@@ -315,9 +313,9 @@ class AppState {
 // global app state
 const appState = new AppState();
 
-// ========================================
+
 // ROUTER
-// ========================================
+
 // handles URL navigation and routing
 // this was a bitch to get working with github pages
 class Router {
@@ -397,9 +395,9 @@ class Router {
 
 const router = new Router();
 
-// ========================================
+
 // THEME MANAGER
-// ========================================
+
 // handles light/dark mode switching
 class ThemeManager {
     constructor() {
@@ -438,9 +436,9 @@ class ThemeManager {
     }
 }
 
-// ========================================
+
 // SEARCH MANAGER
-// ========================================
+
 // handles the search modal and searching through posts
 class SearchManager {
     constructor() {
@@ -525,9 +523,9 @@ class SearchManager {
     }
 }
 
-// ========================================
+
 // SHARE MANAGER
-// ========================================
+
 // handles sharing posts (web share API or clipboard fallback)
 class ShareManager {
     constructor() {
@@ -588,9 +586,9 @@ class ShareManager {
     }
 }
 
-// ========================================
+
 // TEXT SIZE CONTROL
-// ========================================
+
 // lets users adjust font size
 class TextSizeControl {
     constructor() {
@@ -642,9 +640,9 @@ class TextSizeControl {
     }
 }
 
-// ========================================
+
 // TABLE OF CONTENTS
-// ========================================
+
 // generates TOC from headings and tracks active section
 class TableOfContents {
     constructor() {
@@ -768,9 +766,9 @@ class TableOfContents {
     }
 }
 
-// ========================================
+
 // READING PROGRESS
-// ========================================
+
 // shows progress bar at top while reading
 class ReadingProgress {
     constructor() {
@@ -794,9 +792,9 @@ class ReadingProgress {
     }
 }
 
-// ========================================
+
 // SCROLL TO TOP BUTTON
-// ========================================
+
 // shows button to scroll back to top
 class ScrollToTop {
     constructor() {
@@ -823,9 +821,9 @@ class ScrollToTop {
     }
 }
 
-// ========================================
+
 // READING TIME ESTIMATOR
-// ========================================
+
 // calculates estimated reading time
 class ReadingTime {
     constructor() {
@@ -858,9 +856,9 @@ class ReadingTime {
     }
 }
 
-// ========================================
+
 // PRINT MANAGER
-// ========================================
+
 // handles printing
 class PrintManager {
     constructor() {
@@ -872,9 +870,9 @@ class PrintManager {
     }
 }
 
-// ========================================
+
 // DOCUMENT LOADER
-// ========================================
+
 // loads and renders markdown documents
 class DocumentLoader {
     constructor() {
@@ -945,9 +943,9 @@ class DocumentLoader {
     }
 }
 
-// ========================================
+
 // HOME SCREEN MANAGER
-// ========================================
+
 // manages the home page with all the article cards
 class HomeScreenManager {
     constructor() {
@@ -1008,9 +1006,9 @@ class HomeScreenManager {
     }
 }
 
-// ========================================
+
 // INITIALIZATION
-// ========================================
+
 // this runs when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
     
